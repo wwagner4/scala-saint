@@ -1,0 +1,96 @@
+<!--suppress ALL -->
+
+<project name="saint">
+    <property file="build.properties"/>
+    <property name="scala_version">2.11</property>
+
+
+    <target name="deploy" depends="build">
+        <exec executable="${sbt}">
+            <arg line="-Dsbt.log.noformat=true assembly"/>
+        </exec>
+        <exec executable="/usr/local/bin/wget">
+            <arg line="http://entelijan.net:8099/stop"/>
+        </exec>
+        <scp verbose="true" todir="root@entelijan.net:pgm" keyfile="${user.home}/.ssh/id_rsa">
+            <fileset dir="saint-server/target/scala-${scala_version}">
+                <include name="saint.jar"/>
+            </fileset>
+        </scp>
+        <sshexec host="entelijan.net"
+                 failonerror="false"
+                 username="root"
+                 keyfile="${user.home}/.ssh/id_rsa"
+                 verbose="true"
+                 timeout="5000"
+                 command="cd pgm; nohup /root/bin/java -jar -Xmx500M saint.jar"/>
+    </target>
+    <target name="build">
+        <exec executable="${sbt}">
+            <arg line="-Dsbt.log.noformat=true fullOptJS"/>
+        </exec>
+        <copy todir="saint-server/src/main/resources/js">
+            <fileset dir="saint-scalajs/target/scala-${scala_version}">
+                <include name="*-opt.js"/>
+                <include name="*-opt.js.map"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="fastOptJS">
+        <exec executable="${sbt}">
+            <arg line="-Dsbt.log.noformat=true fastOptJS"/>
+        </exec>
+    </target>
+
+    <target name="fullOptJS">
+        <exec executable="${sbt}">
+            <arg line="-Dsbt.log.noformat=true fullOptJS"/>
+        </exec>
+    </target>
+
+	   <target name="clean fastOptJS">
+	        <exec executable="${sbt}">
+	            <arg line="-Dsbt.log.noformat=true fastOptJS"/>
+	        </exec>
+	    </target>
+
+	   <target name="clean fullOptJS">
+	        <exec executable="${sbt}">
+	            <arg line="-Dsbt.log.noformat=true fullOptJS"/>
+	        </exec>
+	    </target>
+
+    <target name="test swing">
+        <exec executable="${sbt}">
+            <arg line='-Dsbt.log.noformat=true "project saint-swing" test'/>
+        </exec>
+    </target>
+
+    <target name="test all">
+        <exec executable="${sbt}">
+            <arg line='-Dsbt.log.noformat=true test'/>
+        </exec>
+    </target>
+
+    <target name="test all clean">
+        <exec executable="${sbt}">
+            <arg line='-Dsbt.log.noformat=true clean test'/>
+        </exec>
+    </target>
+
+    <target name="fastOptJS-copyToServer" depends="fastOptJS">
+        <copy file="saint-scalajs/target/scala-${scala_version}/saint-scalajs-fastopt.js"
+              tofile="saint-server/src/main/resources/js/saint-scalajs-opt.js"/>
+        <copy file="saint-scalajs/target/scala-${scala_version}/saint-scalajs-fastopt.js.map"
+              tofile="saint-server/src/main/resources/js/saint-scalajs-fastopt.js.map"/>
+    </target>
+
+    <target name="fullOptJS-copyToServer" depends="fullOptJS">
+        <copy file="saint-scalajs/target/scala-${scala_version}/saint-scalajs-opt.js"
+              tofile="saint-server/src/main/resources/js/saint-scalajs-opt.js"/>
+        <copy file="saint-scalajs/target/scala-${scala_version}/saint-scalajs-opt.js.map"
+              tofile="saint-server/src/main/resources/js/saint-scalajs-fastopt.js.map"/>
+    </target>
+
+</project>

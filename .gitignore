@@ -1,0 +1,11 @@
+target
+*.swp
+.settings
+bin
+.cache*
+.classpath
+.project
+build.properties
+*.map
+*.js
+application.properties

@@ -1,0 +1,7 @@
+TODO
+- Use ImageOutputStream to draw images directly from Stream
+- Check if paintmode must be serialized
+- Stop blocking while drawing.
+- Calculate scale factor before drawing to image
+- SBT configuration Scala->DSL
+- Chuncekd reading from ScalaJS
