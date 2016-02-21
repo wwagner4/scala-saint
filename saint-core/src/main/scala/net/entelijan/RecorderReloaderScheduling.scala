@@ -17,6 +17,13 @@ trait RecorderReloaderScheduling extends RecorderReloader {
 
   def recordTransport(t: SaintTransport)
 
+  def record(id: String, rec: Recordable): Unit = {
+    if (!allRecordables.contains(id)) {
+      allRecordables(id) = List.empty[Recordable]
+    }
+    allRecordables(id) ::= rec
+  }
+
   private var allRecordables = scala.collection.mutable.Map.empty[String, List[Recordable]]
 
   private def recordBuffered(): Unit = {
@@ -39,13 +46,6 @@ trait RecorderReloaderScheduling extends RecorderReloader {
   }
 
   sched.start(recordBuffered, 200)
-
-  def record(id: String, rec: Recordable): Unit = {
-    if (!allRecordables.contains(id)) {
-      allRecordables(id) = List.empty[Recordable]
-    }
-    allRecordables(id) ::= rec
-  }
 
 }
 
