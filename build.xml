@@ -83,14 +83,14 @@
         <copy file="saint-scalajs/target/scala-${scala_version}/saint-scalajs-fastopt.js"
               tofile="saint-server/src/main/resources/js/saint-scalajs-opt.js"/>
         <copy file="saint-scalajs/target/scala-${scala_version}/saint-scalajs-fastopt.js.map"
-              tofile="saint-server/src/main/resources/js/saint-scalajs-fastopt.js.map"/>
+              tofile="saint-server/src/main/resources/js/saint-scalajs-opt.js.map"/>
     </target>
 
     <target name="fullOptJS-copyToServer" depends="fullOptJS">
         <copy file="saint-scalajs/target/scala-${scala_version}/saint-scalajs-opt.js"
               tofile="saint-server/src/main/resources/js/saint-scalajs-opt.js"/>
         <copy file="saint-scalajs/target/scala-${scala_version}/saint-scalajs-opt.js.map"
-              tofile="saint-server/src/main/resources/js/saint-scalajs-fastopt.js.map"/>
+              tofile="saint-server/src/main/resources/js/saint-scalajs-opt.js.map"/>
     </target>
 
 </project>
