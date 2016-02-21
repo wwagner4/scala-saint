@@ -12,8 +12,9 @@ import java.io.File
 
 object SaintSwingStore extends App with SaintSwing {
 
-  val workdir = new File("/Users/wwagner4/saint/data")
-  val editMode = EM_Existing("1231312")
+  val workdir = FileUtil.dir(List("saint", "data"))
+  //val editMode = EM_Existing("1231312")
+  val editMode = EM_New
   
   println("workdir: " + workdir)
   println("editMode: " + editMode)
@@ -21,9 +22,7 @@ object SaintSwingStore extends App with SaintSwing {
   def runController(
     editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable, sa: SaintAffine,
     system: ActorSystem)(implicit mat: Materializer): Unit = {
-    val dir = workdir
-    println("Client-Store: Workdir '%s'" format dir.getAbsolutePath)
-    val store = ImageStoreFilesys(dir)
+    val store = ImageStoreFilesys(workdir)
     val recRel: RecorderReloader = RecorderReloaderStore(sched, store)
     val framework = DraggableFramework(editMode, canvas, recRel, sa)
     DefaultDraggableController(framework, canvas, sched, draggable)

@@ -25,8 +25,9 @@ import doctus.core.framework.DefaultDraggableController
 object SaintSwingHttp extends App with SaintSwing {
 
   val hostName = "localhost"
-  val port = 2020
-  val editMode = EM_Existing("1231312")
+  val port = 8099
+  //val editMode = EM_Existing("1231312")
+  val editMode = EM_New
   
   println(s"host: $hostName:$port")
   println(s"editMode: $editMode")
