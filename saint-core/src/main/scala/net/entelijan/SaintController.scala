@@ -115,7 +115,7 @@ case class SaintAffine(xoff: Double, yoff: Double, scale: Double) extends SAffin
   }
 }
 
-case class DraggableFramework(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloader) extends DoctusDraggableFramework with RecordableConsumer {
+case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloader) extends DoctusDraggableFramework with RecordableConsumer {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

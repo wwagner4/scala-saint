@@ -38,7 +38,7 @@ object SaintSwingHttp extends App with SaintSwing {
     val clientFlow = Http(system).outgoingConnection(host = hostName, port = port)
     println("Client-Http: Connectong to '%s:%d'" format (hostName, port))
     val recRel: RecorderReloader = RecorderReloaderHttp(sched, clientFlow)
-    val framework = DraggableFramework(editMode, canvas, recRel)
+    val framework = SaintDraggableFramework(editMode, canvas, recRel)
     DefaultDraggableController(framework, canvas, sched, draggable)
   }
 
