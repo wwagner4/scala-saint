@@ -138,7 +138,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
       val newid = System.currentTimeMillis().toString
       recRel.record(newid, recColor(engine.initColor))
       recRel.record(newid, REC_Brightness(engine.initBrightness))
-      recRel.record(newid, REC_StrokeWidth(engine.initStrokeWidth.toDouble))
+      recRel.record(newid, saffine.transformRecord(REC_StrokeWidth(engine.initStrokeWidth.toDouble)))
       newid
 
     case EM_Existing(_id) =>
@@ -152,7 +152,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
   strokeWidthComp.onActivStop((sw: Option[Int]) => {
     sw.foreach { value =>
       engine.strokeWidth = value
-      recRel.record(id, REC_StrokeWidth(value.toDouble))
+      recRel.record(id, saffine.transformRecord(REC_StrokeWidth(value.toDouble)))
     }
     reacting = true
   })
