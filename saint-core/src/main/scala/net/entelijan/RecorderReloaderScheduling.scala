@@ -40,11 +40,11 @@ trait RecorderReloaderScheduling extends RecorderReloader {
 
   sched.start(save, 200)
 
-  def record(id: String, rec: Recordable, saffine: SAffine): Unit = {
+  def record(id: String, rec: Recordable): Unit = {
       if (!allRecordables.contains(id)) {
         allRecordables(id) = List.empty[Recordable]
       }
-      allRecordables(id) ::= saffine.transformRecord(rec)
+      allRecordables(id) ::= rec
   }
 
 }

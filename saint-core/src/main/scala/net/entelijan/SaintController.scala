@@ -53,7 +53,7 @@ case object CM_ZoomOut extends ControllerMode {
 }
 
 trait RecorderReloader {
-  def record(id: String, recordable: Recordable, transform: SAffine): Unit
+  def record(id: String, recordable: Recordable): Unit
   def reload(id: String, consumer: RecordableConsumer, transform: SAffine): Future[Unit]
 }
 
@@ -136,9 +136,9 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
   val id = editmode match {
     case EM_New =>
       val newid = System.currentTimeMillis().toString
-      recRel.record(newid, recColor(engine.initColor), saffine)
-      recRel.record(newid, REC_Brightness(engine.initBrightness), saffine)
-      recRel.record(newid, REC_StrokeWidth(engine.initStrokeWidth.toDouble), saffine)
+      recRel.record(newid, recColor(engine.initColor))
+      recRel.record(newid, REC_Brightness(engine.initBrightness))
+      recRel.record(newid, REC_StrokeWidth(engine.initStrokeWidth.toDouble))
       newid
 
     case EM_Existing(_id) =>
@@ -152,7 +152,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
   strokeWidthComp.onActivStop((sw: Option[Int]) => {
     sw.foreach { value =>
       engine.strokeWidth = value
-      recRel.record(id, REC_StrokeWidth(value.toDouble), saffine)
+      recRel.record(id, REC_StrokeWidth(value.toDouble))
     }
     reacting = true
   })
@@ -162,7 +162,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
   colorComp.onActivStop((optVal: Option[DoctusColor]) => {
     optVal.foreach { col =>
       engine.baseColor(col)
-      recRel.record(id, recColor(col), saffine)
+      recRel.record(id, recColor(col))
     }
     reacting = true
   })
@@ -172,7 +172,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
   colorBWComp.onActivStop((optVal: Option[DoctusColor]) => {
     optVal.foreach { col =>
       engine.baseColor(col)
-      recRel.record(id, recColor(col), saffine)
+      recRel.record(id, recColor(col))
     }
     reacting = true
   })
@@ -202,7 +202,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
   brightnessComp.onActivStop((optValue: Option[Int]) => {
     optValue.foreach { value =>
       engine.brightness(value)
-      recRel.record(id, REC_Brightness(value), saffine)
+      recRel.record(id, REC_Brightness(value))
     }
     reacting = true
   })
@@ -327,7 +327,8 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
 
       case REC_DrawUnrecorded(fx, fy, tx, ty) =>
         engine.draw(g, DoctusPoint(fx, fy), DoctusPoint(tx, ty))
-        recRel.record(id, REC_Draw(fx, fy, tx, ty), saffine)
+        val drawTransformed = saffine.transformRecord(REC_Draw(fx, fy, tx, ty))
+        recRel.record(id, drawTransformed)
 
       case _rec =>
         DrawUtil.drawRecordable(_rec, canvas, g, engine)
