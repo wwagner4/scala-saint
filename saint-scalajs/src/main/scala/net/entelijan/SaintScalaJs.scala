@@ -26,9 +26,7 @@ object SaintScalaJs {
 
     val mode = upickle.default.read[Editmode](editmode)
 
-    val sa = SaintAffine(0, 0, 1)
-
-    val fw = DraggableFramework(mode, canvas, RecorderReloaderScalaJs(sched), sa)
+    val fw = DraggableFramework(mode, canvas, RecorderReloaderScalaJs(sched))
     DefaultDraggableController(fw, canvas, sched, draggable)
 
   }

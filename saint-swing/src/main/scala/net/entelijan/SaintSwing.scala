@@ -72,12 +72,10 @@ trait SaintSwing {
     implicit val actorSystem = ActorSystem()
     implicit val materializer = ActorMaterializer()
 
-    val sa = SaintAffine(0, 0, 1)
-
-    runController(editMode, canvas, sched, draggable, sa, system)
+    runController(editMode, canvas, sched, draggable, system)
   }
 
-  def runController(editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable, sa: SaintAffine,
+  def runController(editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
                     system: ActorSystem)(implicit mat: Materializer): Unit
 
 }

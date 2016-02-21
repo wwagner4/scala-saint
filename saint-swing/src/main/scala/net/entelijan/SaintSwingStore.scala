@@ -13,18 +13,18 @@ import java.io.File
 object SaintSwingStore extends App with SaintSwing {
 
   val workdir = FileUtil.dir(List("saint", "data"))
-  //val editMode = EM_Existing("1231312")
-  val editMode = EM_New
+  val editMode = EM_Existing("1456042177739")
+  //val editMode = EM_New
   
   println("workdir: " + workdir)
   println("editMode: " + editMode)
 
   def runController(
-    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable, sa: SaintAffine,
+    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
     system: ActorSystem)(implicit mat: Materializer): Unit = {
     val store = ImageStoreFilesys(workdir)
     val recRel: RecorderReloader = RecorderReloaderStore(sched, store)
-    val framework = DraggableFramework(editMode, canvas, recRel, sa)
+    val framework = DraggableFramework(editMode, canvas, recRel)
     DefaultDraggableController(framework, canvas, sched, draggable)
   }
 

@@ -26,19 +26,19 @@ object SaintSwingHttp extends App with SaintSwing {
 
   val hostName = "localhost"
   val port = 8099
-  //val editMode = EM_Existing("1231312")
-  val editMode = EM_New
+  val editMode = EM_Existing("1456042177739")
+  //val editMode = EM_New
   
   println(s"host: $hostName:$port")
   println(s"editMode: $editMode")
 
   def runController(
-    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable, sa: SaintAffine,
+    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
     system: ActorSystem)(implicit mat: Materializer): Unit = {
     val clientFlow = Http(system).outgoingConnection(host = hostName, port = port)
     println("Client-Http: Connectong to '%s:%d'" format (hostName, port))
     val recRel: RecorderReloader = RecorderReloaderHttp(sched, clientFlow)
-    val framework = DraggableFramework(editMode, canvas, recRel, sa)
+    val framework = DraggableFramework(editMode, canvas, recRel)
     DefaultDraggableController(framework, canvas, sched, draggable)
   }
 
