@@ -9,3 +9,4 @@ build.properties
 *.map
 *.js
 application.properties
+.DS_Store
