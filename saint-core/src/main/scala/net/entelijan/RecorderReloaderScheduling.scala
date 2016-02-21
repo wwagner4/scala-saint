@@ -20,31 +20,31 @@ trait RecorderReloaderScheduling extends RecorderReloader {
   private var allRecordables = scala.collection.mutable.Map.empty[String, List[Recordable]]
 
   private def save(): Unit = {
+    def save(id: String, recordables: List[Recordable]): List[Recordable] = {
+      if (recordables.nonEmpty) {
+        val (head, rest) = recordables.splitAt(30)
+        // TODO Add thread safety here. Some Recordables might get lost. Not really a problem for saint.
+        val recCopy = head.reverse
+        val transp = SaintTransport(id, recCopy)
+        recordTransport(transp)
+        rest
+      } else {
+        recordables
+      }
+    }
+
     allRecordables.keySet.foreach { id =>
       allRecordables(id) = save(id, allRecordables(id))
-    }
-  }
-
-  private def save(id: String, recordables: List[Recordable]): List[Recordable] = {
-    if (recordables.nonEmpty) {
-      val (head, rest) = recordables.splitAt(30)
-      // TODO Add thread safety here. Some Recordables might get lost. Not really a problem for saint.
-      val recCopy = head.reverse
-      val transp = SaintTransport(id, recCopy)
-      recordTransport(transp)
-      rest
-    } else {
-      recordables
     }
   }
 
   sched.start(save, 200)
 
   def record(id: String, rec: Recordable): Unit = {
-      if (!allRecordables.contains(id)) {
-        allRecordables(id) = List.empty[Recordable]
-      }
-      allRecordables(id) ::= rec
+    if (!allRecordables.contains(id)) {
+      allRecordables(id) = List.empty[Recordable]
+    }
+    allRecordables(id) ::= rec
   }
 
 }
