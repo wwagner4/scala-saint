@@ -24,7 +24,7 @@ import doctus.core.framework.DefaultDraggableController
 
 object SaintSwingHttp extends App with SaintSwing {
 
-  val hostName = "localhost"
+  val hostName = "wallace.lan"
   val port = 8099
   val editMode = EM_Existing("1456042177739")
   //val editMode = EM_New
@@ -51,7 +51,7 @@ case class RecorderReloaderHttp(
     implicit mat: Materializer)
     extends RecorderReloaderScheduling {
 
-  def reload(id: String, consumer: RecordableConsumer, saffine: SAffine): Future[Unit] = {
+  def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
 
     def mapIdToHttpRequest(id: String): HttpRequest = {
       val uriStr = "/txt2/%s" format id
@@ -73,8 +73,7 @@ case class RecorderReloaderHttp(
           .map(chunkedStreamPart => chunkedStreamPart.data().decodeString("UTF-8"))
           .map(string => upickle.default.read[Seq[Recordable]](string))
           .runForeach(recList => recList.foreach { rec =>
-            val recTransf = saffine.transformReload(rec)
-            consumer.consume(recTransf)
+            consumer.consume(rec)
           })
       }.runWith(Sink.ignore)
   }

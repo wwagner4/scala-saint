@@ -13,7 +13,7 @@ import java.io.File
 object SaintSwingStore extends App with SaintSwing {
 
   val workdir = FileUtil.dir(List("saint", "data"))
-  val editMode = EM_Existing("1451978241131")
+  val editMode = EM_Existing("1456042177739")
   //val editMode = EM_New
   
   println("workdir: " + workdir)
@@ -34,9 +34,8 @@ object SaintSwingStore extends App with SaintSwing {
 case class RecorderReloaderStore(sched: DoctusScheduler, store: ImageStore)(
     implicit mat: Materializer) extends RecorderReloaderScheduling {
 
-  def reload(id: String, consumer: RecordableConsumer, saffine: SAffine): Future[Unit] = {
+  def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
     store.recordableOut(id)
-      .map { rec => saffine.transformReload(rec) }
       .runForeach { rec => consumer.consume(rec) }
   }
 

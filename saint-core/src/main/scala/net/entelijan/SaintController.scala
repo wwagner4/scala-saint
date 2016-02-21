@@ -54,7 +54,7 @@ case object CM_ZoomOut extends ControllerMode {
 
 trait RecorderReloader {
   def record(id: String, recordable: Recordable): Unit
-  def reload(id: String, consumer: RecordableConsumer, transform: SAffine): Future[Unit]
+  def reload(id: String, consumer: RecordableConsumer): Future[Unit]
 }
 
 trait RecordableConsumer {
@@ -125,13 +125,19 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
   var prevPoint: Option[DoctusPoint] = None
   var startPoint: Option[DoctusPoint] = None
 
-  var reacting = true
+  var reactingToUserInput = true
   var init = true
   var mode: ControllerMode = CM_Draw
 
   val engine: DrawEngine = DrawEngineLine
 
-  def consume(r: Recordable): Unit = recordablesBuffer ::= r
+  def consume(r: Recordable): Unit = {
+    val recTransformed = r match {
+      case _: REC_DrawUnrecorded => r
+      case _ => saffine.transformReload(r)
+    }
+    recordablesBuffer ::= recTransformed
+  }
 
   val id = editmode match {
     case EM_New =>
@@ -142,69 +148,69 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
       newid
 
     case EM_Existing(_id) =>
-      recRel.reload(_id, this, saffine)
+      recRel.reload(_id, this)
       _id
   }
 
   val strokeWidthConf = RadioButtonGenericConfig("stroke weight", 70, List(2, 5, 7, 10, 15, 20, 50, 75, 100, 200, 400, 800), 5)
   val strokeWidthComp = RadioButtonGeneric(DoctusPoint(5, 5), 40, 360, strokeWidthConf)
-  strokeWidthComp.onActivStart(() => reacting = false)
+  strokeWidthComp.onActivStart(() => reactingToUserInput = false)
   strokeWidthComp.onActivStop((sw: Option[Int]) => {
     sw.foreach { value =>
       engine.strokeWidth = value
       recRel.record(id, saffine.transformRecord(REC_StrokeWidth(value.toDouble)))
     }
-    reacting = true
+    reactingToUserInput = true
   })
 
   val colorComp = RadioButtonColorCol(DoctusPoint(50, 5), 440, 40)
-  colorComp.onActivStart(() => reacting = false)
+  colorComp.onActivStart(() => reactingToUserInput = false)
   colorComp.onActivStop((optVal: Option[DoctusColor]) => {
     optVal.foreach { col =>
       engine.baseColor(col)
       recRel.record(id, recColor(col))
     }
-    reacting = true
+    reactingToUserInput = true
   })
 
   val colorBWComp = RadioButtonColorBW(DoctusPoint(50, 95), 40, 100)
-  colorBWComp.onActivStart(() => reacting = false)
+  colorBWComp.onActivStart(() => reactingToUserInput = false)
   colorBWComp.onActivStop((optVal: Option[DoctusColor]) => {
     optVal.foreach { col =>
       engine.baseColor(col)
       recRel.record(id, recColor(col))
     }
-    reacting = true
+    reactingToUserInput = true
   })
 
   val reloadComp = ClickButton(DoctusPoint(50, 200), 40, 60, "reload", 40)
-  reloadComp.onActivStart(() => reacting = false)
+  reloadComp.onActivStart(() => reactingToUserInput = false)
   reloadComp.onClick { () =>
     consume(REC_Cleanup)
-    recRel.reload(id, this, saffine) onComplete {
-      case _ => reacting = true
+    recRel.reload(id, this) onComplete {
+      case _ => reactingToUserInput = true
     }
   }
 
   val modeConf = RadioButtonGenericConfig("mode", 40, List(CM_Draw, CM_Translate, CM_ZoomIn, CM_ZoomOut), 0)
   val modeComp = RadioButtonGeneric(DoctusPoint(50, 265), 40, 120, modeConf)
-  modeComp.onActivStart(() => reacting = false)
+  modeComp.onActivStart(() => reactingToUserInput = false)
   modeComp.onActivStop((optValue: Option[ControllerMode]) => {
     optValue.foreach { value =>
       mode = value
     }
-    reacting = true
+    reactingToUserInput = true
   })
 
   val brightnessConf = RadioButtonGenericConfig("brightness", 60, List(20, 40, 60, 80, 100), 4)
   val brightnessComp = RadioButtonGeneric(DoctusPoint(50, 50), 250, 40, brightnessConf)
-  brightnessComp.onActivStart(() => reacting = false)
+  brightnessComp.onActivStart(() => reactingToUserInput = false)
   brightnessComp.onActivStop((optValue: Option[Int]) => {
     optValue.foreach { value =>
       engine.brightness(value)
       recRel.record(id, REC_Brightness(value))
     }
-    reacting = true
+    reactingToUserInput = true
   })
 
   val components: List[Component] = List(colorComp, strokeWidthComp, brightnessComp, colorBWComp, reloadComp, modeComp)
@@ -218,7 +224,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
     } else {
       val from = prevPoint.get
       val to = pos
-      if (reacting) {
+      if (reactingToUserInput) {
         mode match {
           case CM_Draw =>
             val rec = REC_DrawUnrecorded(from.x, from.y, to.x, to.y)
@@ -238,7 +244,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
   }
 
   def draggableStop(pos: DoctusPoint): Unit = {
-    if (reacting) {
+    if (reactingToUserInput) {
       val from = startPoint.get
       val to = pos
       mode match {
@@ -263,7 +269,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
       g.rect(0, 0, canvas.width, canvas.height)
       init = false
     }
-    if (reacting) {
+    if (reactingToUserInput) {
       mode match {
         case CM_Draw      => drawGraphic(g)
         case CM_Translate => drawGraphic(g)
@@ -282,7 +288,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
     saffine = saffine.copy(xoff = xoff1, yoff = yoff1)
 
     consume(REC_Cleanup)
-    recRel.reload(id, this, saffine)
+    recRel.reload(id, this)
   }
 
   private def zoomIn(from: DoctusPoint, to: DoctusPoint, canvas: DoctusCanvas) = {
@@ -299,7 +305,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
     engine.strokeWidth = (engine.strokeWidth * s1).round.toInt
 
     consume(REC_Cleanup)
-    recRel.reload(id, this, saffine)
+    recRel.reload(id, this)
   }
 
   private def zoomOut(from: DoctusPoint, to: DoctusPoint, canvas: DoctusCanvas) = {
@@ -315,7 +321,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
 
     saffine = saffine.copy(xoff = dx, yoff = dy, scale = s1)
     consume(REC_Cleanup)
-    recRel.reload(id, this, saffine)
+    recRel.reload(id, this)
   }
 
   private def drawGraphic(g: DoctusGraphics): Unit = {

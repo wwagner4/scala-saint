@@ -38,7 +38,7 @@ object SaintScalaJs {
       Ajax.post(s"/saint", data)
     }
 
-    def reload(id: String, consumer: RecordableConsumer, saffine: SAffine): Future[Unit] = {
+    def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
       Future {
         val reqStr = s"/txt1/$id"
         val fresp = Ajax.get(reqStr)
@@ -46,8 +46,7 @@ object SaintScalaJs {
           val jsonStr = req.responseText
           val recs: Seq[Recordable] = upickle.default.read[Seq[Recordable]](jsonStr)
           recs.foreach { rec =>
-            val recTrans = saffine.transformReload(rec)
-            consumer.consume(recTrans)
+            consumer.consume(rec)
           }
         }
       }
