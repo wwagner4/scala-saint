@@ -55,6 +55,8 @@ trait ImageStore {
 
 case class ImageStoreFilesys(dir: File) extends ImageStore {
 
+  println("ImageStoreFilesys dir: " + dir)
+  
   import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.duration._
 

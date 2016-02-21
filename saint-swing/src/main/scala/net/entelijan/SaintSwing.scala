@@ -24,43 +24,11 @@ import javax.swing.JPanel
 
 case class ServerConfig(hostName: String, port: Int)
 
-object SaintSwingConfig {
-
-  private lazy val conf = ConfigFactory.load()
-
-  def editMode: Editmode = {
-    try {
-      val id = conf.getString("id")
-      val NUM = "(\\d*)".r
-      id match {
-        case NUM(n) => EM_Existing(n)
-        case _      => EM_New
-      }
-    } catch {
-      case ex: com.typesafe.config.ConfigException => EM_New
-    }
-  }
-
-  def serverConfig: ServerConfig = {
-    val host = conf.getString("host")
-    val port = conf.getInt("port")
-    ServerConfig(host, port)
-  }
-
-  def workdir: File = {
-    val workdir = conf.getString("workdir")
-    val dir = new File(workdir)
-    require(dir.exists())
-    dir
-  }
-
-}
-
 trait SaintSwing {
 
+  def editMode : Editmode
+
   def run: Unit = {
-    val editMode = SaintSwingConfig.editMode
-    println("editMode: " + editMode)
 
     val system = ActorSystem()
 
