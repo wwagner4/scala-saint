@@ -19,8 +19,8 @@ trait RecorderReloaderScheduling extends RecorderReloader {
 
   private var allRecordables = scala.collection.mutable.Map.empty[String, List[Recordable]]
 
-  private def save(): Unit = {
-    def save(id: String, recordables: List[Recordable]): List[Recordable] = {
+  private def recordBuffered(): Unit = {
+    def recordBuffered(id: String, recordables: List[Recordable]): List[Recordable] = {
       if (recordables.nonEmpty) {
         val (head, rest) = recordables.splitAt(30)
         // TODO Add thread safety here. Some Recordables might get lost. Not really a problem for saint.
@@ -34,11 +34,11 @@ trait RecorderReloaderScheduling extends RecorderReloader {
     }
 
     allRecordables.keySet.foreach { id =>
-      allRecordables(id) = save(id, allRecordables(id))
+      allRecordables(id) = recordBuffered(id, allRecordables(id))
     }
   }
 
-  sched.start(save, 200)
+  sched.start(recordBuffered, 200)
 
   def record(id: String, rec: Recordable): Unit = {
     if (!allRecordables.contains(id)) {
