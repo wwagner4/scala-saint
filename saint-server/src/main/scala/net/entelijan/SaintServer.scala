@@ -17,7 +17,7 @@ import akka.http.scaladsl.model.HttpCharsets
 
 case class Config(host: String, port: Int)
 
-object Server extends App {
+object SaintServer extends App {
 
   import akka.http.scaladsl.Http
   import akka.stream.ActorMaterializer
