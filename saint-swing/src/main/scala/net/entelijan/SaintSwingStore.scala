@@ -32,14 +32,14 @@ object SaintSwingStore extends App with SaintSwing {
 }
 
 case class RecorderReloaderStore(sched: DoctusScheduler, store: ImageStore)(
-    implicit mat: Materializer) extends RecorderReloaderScheduling {
+    implicit mat: Materializer) extends RecorderReloader {
 
   def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
     store.recordableOut(id)
       .runForeach { rec => consumer.consume(rec) }
   }
 
-  def recordTransport(transp: SaintTransport): Unit = {
+  def record(transp: SaintTransport): Unit = {
     Source.single(transp)
       .map { t => t.recordables }
       .runWith(store.recordableIn(transp.id))

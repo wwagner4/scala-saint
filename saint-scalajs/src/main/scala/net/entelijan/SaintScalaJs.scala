@@ -31,9 +31,9 @@ object SaintScalaJs {
 
   }
 
-  case class RecorderReloaderScalaJs(sched: DoctusScheduler) extends RecorderReloaderScheduling {
+  case class RecorderReloaderScalaJs(sched: DoctusScheduler) extends RecorderReloader {
 
-    def recordTransport(transp: SaintTransport): Unit = {
+    def record(transp: SaintTransport): Unit = {
       val data = upickle.default.write(transp)
       Ajax.post(s"/saint", data)
     }
