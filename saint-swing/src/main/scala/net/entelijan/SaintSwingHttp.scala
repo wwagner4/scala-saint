@@ -26,8 +26,8 @@ object SaintSwingHttp extends App with SaintSwing {
 
   val hostName = "wallace.lan"
   val port = 8099
-  val editMode = EM_Existing("1456042177739")
-  //val editMode = EM_New
+  //val editMode = EM_Existing("1456042177739")
+  val editMode = EM_New
   
   println(s"host: $hostName:$port")
   println(s"editMode: $editMode")
@@ -49,7 +49,7 @@ object SaintSwingHttp extends App with SaintSwing {
 case class RecorderReloaderHttp(
   sched: DoctusScheduler, clientFlow: Flow[HttpRequest, HttpResponse, _])(
     implicit mat: Materializer)
-    extends RecorderReloaderScheduling {
+    extends RecorderReloader {
 
   def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
 
@@ -78,7 +78,7 @@ case class RecorderReloaderHttp(
       }.runWith(Sink.ignore)
   }
 
-  def recordTransport(transp: SaintTransport): Unit = {
+  def record(transp: SaintTransport): Unit = {
 
     def toHttpRequest(transp: SaintTransport): HttpRequest = {
       val content = upickle.default.write(transp)
