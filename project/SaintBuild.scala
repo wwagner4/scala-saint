@@ -47,7 +47,7 @@ object SaintBuild extends Build {
     lazy val serverSettings =
       commonSettings ++
         Seq(
-          mainClass := Some("net.entelijan.Server"),
+          mainClass := Some("net.entelijan.SaintServer"),
           assemblyJarName := "saint.jar",
           libraryDependencies += "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
           testFrameworks += new TestFramework("utest.runner.Framework")
