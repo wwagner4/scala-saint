@@ -350,6 +350,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
         None
     }
     if (!transpRecs.isEmpty) {
+      println(s"sending ${transpRecs.size} recordables")
       recRel.record(SaintTransport(id, transpRecs))
     }
   }
