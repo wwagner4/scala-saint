@@ -27,7 +27,7 @@
     </target>
     <target name="build">
         <exec executable="${sbt}">
-            <arg line="-Dsbt.log.noformat=true fullOptJS"/>
+            <arg line="-Dsbt.log.noformat=true clean fullOptJS"/>
         </exec>
         <copy todir="saint-server/src/main/resources/js">
             <fileset dir="saint-scalajs/target/scala-${scala_version}">
@@ -40,6 +40,12 @@
     <target name="fastOptJS">
         <exec executable="${sbt}">
             <arg line="-Dsbt.log.noformat=true fastOptJS"/>
+        </exec>
+    </target>
+
+    <target name="clean">
+        <exec executable="${sbt}">
+            <arg line="-Dsbt.log.noformat=true clean"/>
         </exec>
     </target>
 
