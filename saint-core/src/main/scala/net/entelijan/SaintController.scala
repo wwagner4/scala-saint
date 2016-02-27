@@ -119,7 +119,7 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
 
   import scala.concurrent.ExecutionContext.Implicits.global
   
-  override def frameRate = Some(20)
+  override def frameRate = Some(60)
 
   var saffine: SaintAffine = SaintAffine(0, 0, 1)
   var recordablesBuffer = List.empty[Recordable]
