@@ -23,11 +23,11 @@
                  keyfile="${user.home}/.ssh/id_rsa"
                  verbose="true"
                  timeout="5000"
-                 command="cd pgm; nohup /root/bin/java -jar -Xmx1000M saint.jar &amp;"/>
+                 command="cd pgm; nohup /root/bin/java -jar -Xmx500M saint.jar"/>
     </target>
     <target name="build">
         <exec executable="${sbt}">
-            <arg line="-Dsbt.log.noformat=true clean fullOptJS"/>
+            <arg line="-Dsbt.log.noformat=true fullOptJS"/>
         </exec>
         <copy todir="saint-server/src/main/resources/js">
             <fileset dir="saint-scalajs/target/scala-${scala_version}">
