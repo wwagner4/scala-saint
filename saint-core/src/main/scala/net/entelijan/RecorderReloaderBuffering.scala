@@ -7,7 +7,6 @@ import doctus.core.util.DoctusPoint
 /**
  * Implements recording of SaintTransport elements.
  * These elements are buffered locally and sent every 200 seconds
- * somehow somewhere. Somehow Somewhere is defined by 'recordTransport'
  *
  * Reloading is not defined in that thread
  */
@@ -30,7 +29,8 @@ trait RecorderReloaderBuffering extends RecorderReloader {
     def recordBuffered(id: String, recordables: List[Recordable]): List[Recordable] = {
       if (recordables.nonEmpty) {
         val (head, rest) = recordables.splitAt(30)
-        // TODO Add thread safety here. Some Recordables might get lost. Not really a problem for saint.
+        // TODO Not threadsave. Better would be a separate implementation for each platform.
+        // swing could use actors.
         val recCopy = head.reverse
         val transp = SaintTransport(id, recCopy)
         recordTransport(transp)
