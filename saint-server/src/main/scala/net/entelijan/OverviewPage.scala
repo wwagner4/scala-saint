@@ -2,11 +2,12 @@ package net.entelijan
 
 import java.io.File
 import akka.stream.Materializer
+import net.entelijan.ImageRenderer
 
 case class OverviewPage(implicit mat: Materializer) {
 
-  def render(is: ImageStore): String = {
-    val ids = is.ids
+  def render(renderer: ImageRenderer): String = {
+    val ids = renderer.ids
     val rows = ids.grouped(4)
 
     val rowStr = rows.map { row =>

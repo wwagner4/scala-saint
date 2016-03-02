@@ -13,7 +13,7 @@ import java.io.File
 object SaintSwingStore extends App with SaintSwing {
 
   val workdir = FileUtil.dir(List("saint", "data"))
-  val editMode = EM_Existing("1456042177739")
+  val editMode = EM_Existing("1456934937699")
   //val editMode = EM_New
 
   println("workdir: " + workdir)

@@ -50,7 +50,7 @@ object SaintServer extends App {
 object SaintRoute extends Directives {
 
   val dir = FileUtil.dir(List("saint", "data"))
-  val store = ImageStoreFilesys(dir)
+  val store = ImageRendererFilesys(dir)
 
   def apply(config: Config, sys: ActorSystem)(implicit mat: Materializer): Route = {
     get {
