@@ -31,7 +31,7 @@ object SaintScalaJs {
 
   }
 
-  case class RecorderReloaderScalaJs(sched: DoctusScheduler) extends RecorderReloaderScheduling {
+  case class RecorderReloaderScalaJs(sched: DoctusScheduler) extends RecorderReloaderBuffering {
 
     def recordTransport(transp: SaintTransport): Unit = {
       val data = upickle.default.write(transp)

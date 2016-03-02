@@ -11,7 +11,7 @@ import doctus.core.util.DoctusPoint
  *
  * Reloading is not defined in that thread
  */
-trait RecorderReloaderScheduling extends RecorderReloader {
+trait RecorderReloaderBuffering extends RecorderReloader {
 
   def sched: DoctusScheduler
 

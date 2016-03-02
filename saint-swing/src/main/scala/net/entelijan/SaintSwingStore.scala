@@ -32,7 +32,7 @@ object SaintSwingStore extends App with SaintSwing {
 }
 
 case class RecorderReloaderStore(sched: DoctusScheduler, store: ImageStore)(
-    implicit mat: Materializer) extends RecorderReloaderScheduling {
+    implicit mat: Materializer) extends RecorderReloaderBuffering {
 
   def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
     store.recordableOut(id)

@@ -306,7 +306,9 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
     case (255, 255, 255) => REC_ColorWhite
     case (r, g, b)       => REC_Color(r, g, b)
   }
-  
+
+}
+
 case class SaintAffine(xoff: Double, yoff: Double, scale: Double) extends SAffine {
   private val _scale = 1.0 / scale
   private val min = Affine.matrix(-xoff, -yoff, _scale)
@@ -347,9 +349,5 @@ case class SaintAffine(xoff: Double, yoff: Double, scale: Double) extends SAffin
     case REC_ColorWhite                             => REC_ColorWhite
     case REC_Cleanup                                => REC_Cleanup
   }
-}
-
-
-
 }
 
