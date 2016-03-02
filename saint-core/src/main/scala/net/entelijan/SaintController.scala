@@ -73,48 +73,6 @@ trait SAffine {
 
 }
 
-case class SaintAffine(xoff: Double, yoff: Double, scale: Double) extends SAffine {
-  private val _scale = 1.0 / scale
-  private val min = Affine.matrix(-xoff, -yoff, _scale)
-  private val mout = min.inverse
-
-  private def in(p: DoctusPoint): DoctusPoint = Affine.transforme(p, min)
-
-  private def out(p: DoctusPoint): DoctusPoint = Affine.transforme(p, mout)
-
-  private def win(w: Double): Double = w * _scale
-
-  private def wout(w: Double): Double = w / _scale
-
-  def transformRecord(r: Recordable): Recordable = r match {
-    case REC_Draw(fromx: Double, fromy: Double, tox: Double, toy: Double) =>
-      val from = out(DoctusPoint(fromx, fromy))
-      val to = out(DoctusPoint(tox, toy))
-      REC_Draw(from.x, from.y, to.x, to.y)
-    case REC_DrawUnrecorded(fromx, fromy, tox, toy) => throw new IllegalStateException("REC_DrawUnrecorded should never occurre here")
-    case REC_Color(r: Int, g: Int, b: Int)          => REC_Color(r: Int, g: Int, b: Int)
-    case REC_Brightness(value: Int)                 => REC_Brightness(value)
-    case REC_StrokeWidth(value: Double)             => REC_StrokeWidth(wout(value))
-    case REC_ColorBlack                             => REC_ColorBlack
-    case REC_ColorWhite                             => REC_ColorWhite
-    case REC_Cleanup                                => REC_Cleanup
-  }
-
-  def transformReload(r: Recordable): Recordable = r match {
-    case REC_Draw(fromx: Double, fromy: Double, tox: Double, toy: Double) =>
-      val from = in(DoctusPoint(fromx, fromy))
-      val to = in(DoctusPoint(tox, toy))
-      REC_Draw(from.x, from.y, to.x, to.y)
-    case REC_DrawUnrecorded(fromx, fromy, tox, toy) => throw new IllegalStateException("REC_DrawUnrecorded should never occurre here")
-    case REC_Color(r: Int, g: Int, b: Int)          => REC_Color(r: Int, g: Int, b: Int)
-    case REC_Brightness(value: Int)                 => REC_Brightness(value)
-    case REC_StrokeWidth(value: Double)             => REC_StrokeWidth(win(value))
-    case REC_ColorBlack                             => REC_ColorBlack
-    case REC_ColorWhite                             => REC_ColorWhite
-    case REC_Cleanup                                => REC_Cleanup
-  }
-}
-
 case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloader) extends DoctusDraggableFramework with RecordableConsumer {
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -348,6 +306,50 @@ case class SaintDraggableFramework(editmode: Editmode, canvas: DoctusCanvas, rec
     case (255, 255, 255) => REC_ColorWhite
     case (r, g, b)       => REC_Color(r, g, b)
   }
+  
+case class SaintAffine(xoff: Double, yoff: Double, scale: Double) extends SAffine {
+  private val _scale = 1.0 / scale
+  private val min = Affine.matrix(-xoff, -yoff, _scale)
+  private val mout = min.inverse
+
+  private def in(p: DoctusPoint): DoctusPoint = Affine.transforme(p, min)
+
+  private def out(p: DoctusPoint): DoctusPoint = Affine.transforme(p, mout)
+
+  private def win(w: Double): Double = w * _scale
+
+  private def wout(w: Double): Double = w / _scale
+
+  def transformRecord(r: Recordable): Recordable = r match {
+    case REC_Draw(fromx: Double, fromy: Double, tox: Double, toy: Double) =>
+      val from = out(DoctusPoint(fromx, fromy))
+      val to = out(DoctusPoint(tox, toy))
+      REC_Draw(from.x, from.y, to.x, to.y)
+    case REC_DrawUnrecorded(fromx, fromy, tox, toy) => throw new IllegalStateException("REC_DrawUnrecorded should never occurre here")
+    case REC_Color(r: Int, g: Int, b: Int)          => REC_Color(r: Int, g: Int, b: Int)
+    case REC_Brightness(value: Int)                 => REC_Brightness(value)
+    case REC_StrokeWidth(value: Double)             => REC_StrokeWidth(wout(value))
+    case REC_ColorBlack                             => REC_ColorBlack
+    case REC_ColorWhite                             => REC_ColorWhite
+    case REC_Cleanup                                => REC_Cleanup
+  }
+
+  def transformReload(r: Recordable): Recordable = r match {
+    case REC_Draw(fromx: Double, fromy: Double, tox: Double, toy: Double) =>
+      val from = in(DoctusPoint(fromx, fromy))
+      val to = in(DoctusPoint(tox, toy))
+      REC_Draw(from.x, from.y, to.x, to.y)
+    case REC_DrawUnrecorded(fromx, fromy, tox, toy) => throw new IllegalStateException("REC_DrawUnrecorded should never occurre here")
+    case REC_Color(r: Int, g: Int, b: Int)          => REC_Color(r: Int, g: Int, b: Int)
+    case REC_Brightness(value: Int)                 => REC_Brightness(value)
+    case REC_StrokeWidth(value: Double)             => REC_StrokeWidth(win(value))
+    case REC_ColorBlack                             => REC_ColorBlack
+    case REC_ColorWhite                             => REC_ColorWhite
+    case REC_Cleanup                                => REC_Cleanup
+  }
+}
+
+
 
 }
 
