@@ -26,6 +26,7 @@ object SaintScalaJs {
 
     val mode = upickle.default.read[Editmode](editmode)
 
+    // Common to all platforms
     val fw = DoctusDraggableFrameworkSaint(mode, canvas, RecorderReloaderScalaJs(sched))
     DefaultDraggableController(fw, canvas, sched, draggable)
 
