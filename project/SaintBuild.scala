@@ -50,6 +50,7 @@ object SaintBuild extends Build {
           mainClass := Some("net.entelijan.SaintServer"),
           assemblyJarName := "saint.jar",
           libraryDependencies += "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
+          libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test",
           testFrameworks += new TestFramework("utest.runner.Framework")
         )
 
@@ -63,7 +64,7 @@ object SaintBuild extends Build {
           libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % D.akkaStreamVersion,
           libraryDependencies += "net.entelijan" %% "doctus-swing" % D.doctusVersion,
           libraryDependencies += "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
-          libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
+          libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test",
           libraryDependencies += "com.typesafe" % "config" % "1.2.1",
           testFrameworks += new TestFramework("utest.runner.Framework"))
 
