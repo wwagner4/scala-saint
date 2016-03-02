@@ -26,32 +26,34 @@ object SaintSwingHttp extends App with SaintSwing {
 
   val hostName = "wallace.lan"
   //val hostName = "entelijan.net"
-  
+
   val port = 8099
-  
+
   val editMode = EM_Existing("1456297635929")
   //val editMode = EM_New
-  
+
   println(s"host: $hostName:$port")
   println(s"editMode: $editMode")
+  
+  run
 
   def runController(
     editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
-    system: ActorSystem)(implicit mat: Materializer): Unit = {
-    val clientFlow = Http(system).outgoingConnection(host = hostName, port = port)
+    system: ActorSystem, mat: Materializer): Unit = {
+
+    val clientFlow: Flow[HttpRequest, HttpResponse, _] =
+      Http(system).outgoingConnection(host = hostName, port = port)
+    val recRel: RecorderReloader = RecorderReloaderHttp(sched, clientFlow, mat)
     println("Client-Http: Connectong to '%s:%d'" format (hostName, port))
-    val recRel: RecorderReloader = RecorderReloaderHttp(sched, clientFlow)
-    val framework = SaintDraggableFramework(editMode, canvas, recRel)
+
+    // Common to all Platforms
+    val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
     DefaultDraggableController(framework, canvas, sched, draggable)
   }
-
-  run
-
 }
 
 case class RecorderReloaderHttp(
-  sched: DoctusScheduler, clientFlow: Flow[HttpRequest, HttpResponse, _])(
-    implicit mat: Materializer)
+  sched: DoctusScheduler, clientFlow: Flow[HttpRequest, HttpResponse, _], mat: Materializer)
     extends RecorderReloaderBuffering {
 
   def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
@@ -77,8 +79,8 @@ case class RecorderReloaderHttp(
           .map(string => upickle.default.read[Seq[Recordable]](string))
           .runForeach(recList => recList.foreach { rec =>
             consumer.consume(rec)
-          })
-      }.runWith(Sink.ignore)
+          })(mat)
+      }.runWith(Sink.ignore)(mat)
   }
 
   def recordTransport(transp: SaintTransport): Unit = {
@@ -100,7 +102,7 @@ case class RecorderReloaderHttp(
     Source.single(transp)
       .map(transp => toHttpRequest(transp))
       .via(clientFlow)
-      .runWith(sink)
+      .runWith(sink)(mat)
   }
 
 }

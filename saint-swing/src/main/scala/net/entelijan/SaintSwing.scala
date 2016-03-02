@@ -29,8 +29,9 @@ trait SaintSwing {
   def editMode : Editmode
 
   def run: Unit = {
-
-    val system = ActorSystem()
+    
+    implicit val system = ActorSystem()
+    implicit val materializer = ActorMaterializer()
 
     val top = new JFrame()
     val wl = new WindowListener {
@@ -69,14 +70,11 @@ trait SaintSwing {
     top.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
     top.setVisible(true)
 
-    implicit val actorSystem = ActorSystem()
-    implicit val materializer = ActorMaterializer()
-
-    runController(editMode, canvas, sched, draggable, system)
+    runController(editMode, canvas, sched, draggable, system, materializer)
   }
 
   def runController(editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
-                    system: ActorSystem)(implicit mat: Materializer): Unit
+                    system: ActorSystem, mat: Materializer): Unit
 
 }
 

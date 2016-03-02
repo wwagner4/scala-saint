@@ -15,34 +15,36 @@ object SaintSwingStore extends App with SaintSwing {
   val workdir = FileUtil.dir(List("saint", "data"))
   val editMode = EM_Existing("1456042177739")
   //val editMode = EM_New
-  
+
   println("workdir: " + workdir)
   println("editMode: " + editMode)
+  
+  run
 
   def runController(
     editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
-    system: ActorSystem)(implicit mat: Materializer): Unit = {
+    sys: ActorSystem, mat: Materializer): Unit = {
+
     val store = ImageStoreFilesys(workdir)
-    val recRel: RecorderReloader = RecorderReloaderStore(sched, store)
-    val framework = SaintDraggableFramework(editMode, canvas, recRel)
+    val recRel: RecorderReloader = RecorderReloaderStore(sched, store, mat)
+
+    // Common to all Platforms
+    val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
     DefaultDraggableController(framework, canvas, sched, draggable)
   }
-
-  run
 }
 
-case class RecorderReloaderStore(sched: DoctusScheduler, store: ImageStore)(
-    implicit mat: Materializer) extends RecorderReloaderBuffering {
+case class RecorderReloaderStore(sched: DoctusScheduler, store: ImageStore, mat: Materializer) extends RecorderReloaderBuffering {
 
   def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
     store.recordableOut(id)
-      .runForeach { rec => consumer.consume(rec) }
+      .runForeach({ rec => consumer.consume(rec) })(mat)
   }
 
   def recordTransport(transp: SaintTransport): Unit = {
     Source.single(transp)
       .map { t => t.recordables }
-      .runWith(store.recordableIn(transp.id))
+      .runWith(store.recordableIn(transp.id))(mat)
   }
 
 }
