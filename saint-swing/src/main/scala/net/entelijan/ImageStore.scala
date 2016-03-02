@@ -46,22 +46,43 @@ case object IS_VeryLarge extends ImageSize {
 
 trait ImageStore {
 
-  def ids: Seq[String]
-  def imageOut(id: String, size: ImageSize)(implicit mat: Materializer): Source[ByteString, _]
+  // TODO Klären: Warum muss der Matvalue Future sein
   def recordableOut(id: String): Source[Recordable, Future[_]]
   def recordableIn(id: String): Sink[Seq[Recordable], Future[_]]
+
+  // For the overview page. Only used by the server
+  def ids: Seq[String]
+  def imageOut(id: String, size: ImageSize)(implicit mat: Materializer): Source[ByteString, _]
 
 }
 
 case class ImageStoreFilesys(dir: File) extends ImageStore {
 
   println("ImageStoreFilesys dir: " + dir)
-  
+
   import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.duration._
 
   require(dir.exists())
   require(dir.isDirectory())
+
+  def recordableOut(id: String): Source[Recordable, Future[_]] = {
+    val file: File = getTxtFile(id).getOrElse(throw new IllegalStateException("no data found for id " + id))
+    
+    val lines: Source[String, Future[_]] = FileLinesSource(file)
+    
+    lines.map { line: String => upickle.default.read[Recordable](line) }
+  }
+
+  def recordableIn(id: String): Sink[Seq[Recordable], Future[_]] = {
+    val file = txtFile(id)
+    val flow = Flow[Seq[Recordable]].map { recs =>
+      val lines = recs.map { upickle.default.write(_) }
+      ByteString(lines.mkString("", "\n", "\n"))
+    }
+    val sink = FileIO.toFile(file, append = true)
+    flow.toMat(sink)(Keep.right)
+  }
 
   val imgTyp = "png"
 
@@ -126,22 +147,6 @@ case class ImageStoreFilesys(dir: File) extends ImageStore {
 
     val file = createOrGetImage
     FileIO.fromFile(file, 100000)
-  }
-
-  def recordableOut(id: String): Source[Recordable, Future[_]] = {
-    val file = getTxtFile(id).getOrElse(throw new IllegalStateException("no data found for id " + id))
-    val lines = FileLinesSource(file)
-    lines.map { upickle.default.read[Recordable] }
-  }
-
-  def recordableIn(id: String): Sink[Seq[Recordable], Future[_]] = {
-    val file = txtFile(id)
-    val flow = Flow[Seq[Recordable]].map { recs =>
-      val lines = recs.map { upickle.default.write(_) }
-      ByteString(lines.mkString("", "\n", "\n"))
-    }
-    val sink = FileIO.toFile(file, append = true)
-    flow.toMat(sink)(Keep.right)
   }
 
   private def imgFile(id: String, is: ImageSize): File = {
