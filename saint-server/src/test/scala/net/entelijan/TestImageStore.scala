@@ -27,7 +27,8 @@ class TestImageStore extends FunSuite {
 
       val src = Source.single(List(rec))
       val sink = store.recordableIn(id)
-      Await.ready(src.runWith(sink), 5.second)
+      src.runWith(sink)
+      Thread.sleep(100)
 
       var result = List.empty[Recordable]
       val f = store.recordableOut(id).runForeach { x => result :+= x }
@@ -53,7 +54,8 @@ class TestImageStore extends FunSuite {
 
       val src = Source.single(List(rec1, rec2))
       val sink = store.recordableIn(id)
-      Await.ready(src.runWith(sink), 5.second)
+      src.runWith(sink)
+      Thread.sleep(100)
 
       var result = Seq.empty[Recordable]
       val f = store.recordableOut(id).runForeach { x => result :+= x }
@@ -80,11 +82,13 @@ class TestImageStore extends FunSuite {
 
       val src1 = Source.single(List(rec1))
       val sink1 = store.recordableIn(id)
-      Await.ready(src1.runWith(sink1), 5.second)
+      src1.runWith(sink1)
+      Thread.sleep(100)
 
       val src2 = Source.single(List(rec2))
       val sink2 = store.recordableIn(id)
-      Await.ready(src2.runWith(sink2), 5.second)
+      src2.runWith(sink2)
+      Thread.sleep(100)
 
       var result = List.empty[Recordable]
       val f = store.recordableOut(id).runForeach { x => result :+= x }
@@ -118,6 +122,7 @@ class TestImageStore extends FunSuite {
       val src = Source.single(recs)
       val sink = store.recordableIn(id)
       src.runWith(sink)
+      Thread.sleep(100)
     }
     implicit val sys = ActorSystem.create()
     try {

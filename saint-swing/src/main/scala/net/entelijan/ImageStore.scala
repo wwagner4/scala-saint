@@ -1,23 +1,16 @@
 package net.entelijan
 
+import java.io.File
+
+import scala.concurrent.ExecutionContext.Implicits
+import scala.concurrent.Future
+
+import akka.stream.scaladsl.FileIO
+import akka.stream.scaladsl.Flow
+import akka.stream.scaladsl.Keep
+import akka.stream.scaladsl.Sink
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import akka.stream.scaladsl.Sink
-import java.io.File
-import akka.stream.scaladsl.Flow
-import akka.stream.ActorAttributes
-import scala.concurrent.Future
-import akka.stream.scaladsl.Keep
-import scala.concurrent.Await
-import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
-import doctus.swing.DoctusCanvasSwingBufferedImage
-import doctus.swing.DoctusBufferedImage
-import akka.stream.Materializer
-import doctus.core.DoctusGraphics
-import doctus.core.DoctusCanvas
-import akka.stream.scaladsl.FileIO
-import java.awt.image.RenderedImage
 
 trait ImageStore {
 
@@ -36,7 +29,7 @@ case class ImageStoreFilesys(dir: File) extends ImageStore with ImageStoreBase {
   require(dir.exists())
   require(dir.isDirectory())
 
-  def recordableOut(id: String): Source[Recordable, Future[_]] = {
+  def recordableOut(id: String): Source[Recordable, _] = {
     val file: File = getTxtFile(id).getOrElse(throw new IllegalStateException("no data found for id " + id))
 
     val lines: Source[String, Future[_]] = FileLinesSource(file)
@@ -44,7 +37,7 @@ case class ImageStoreFilesys(dir: File) extends ImageStore with ImageStoreBase {
     lines.map { line: String => upickle.default.read[Recordable](line) }
   }
 
-  def recordableIn(id: String): Sink[Seq[Recordable], Future[_]] = {
+  def recordableIn(id: String): Sink[Seq[Recordable], _] = {
     val file = txtFile(id)
     val flow = Flow[Seq[Recordable]].map { recs =>
       val lines = recs.map { upickle.default.write(_) }

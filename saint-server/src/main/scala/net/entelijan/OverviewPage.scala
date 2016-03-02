@@ -2,7 +2,6 @@ package net.entelijan
 
 import java.io.File
 import akka.stream.Materializer
-import net.entelijan.ImageRenderer
 
 case class OverviewPage(implicit mat: Materializer) {
 
