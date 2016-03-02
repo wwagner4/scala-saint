@@ -39,13 +39,18 @@ case class ImageStoreFilesys(dir: File) extends ImageStore with ImageStoreBase {
 
   def recordableIn(id: String): Sink[Seq[Recordable], _] = {
     val file = txtFile(id)
-    val flow = Flow[Seq[Recordable]].map { recs =>
-      val lines = recs.map { upickle.default.write(_) }
-      ByteString(lines.mkString("", "\n", "\n"))
-    }
+    
+    val flow = Flow[Seq[Recordable]].map { write }
     val sink = FileIO.toFile(file, append = true)
+
+    // TODO: Difference between 'to', 'toMat'
     flow.toMat(sink)(Keep.right)
   }
 
+  private def write(recs: Seq[Recordable]): ByteString = {
+    val lines: Seq[String] = recs.map { rec => upickle.default.write(rec) }
+    val str = lines.mkString("", "\n", "\n")
+    ByteString(str)
+  }
 }
 
