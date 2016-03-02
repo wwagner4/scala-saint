@@ -1,2 +1,3 @@
-#sbt=C:\Program Files (x86)\sbt\bin\sbt.bat
-sbt=/opt/local/bin/sbt
+#sbt=C:/Program Files (x86)/sbt/bin/sbt.bat
+#sbt=/opt/local/bin/sbt
+#sbt=C:/ta30/nutzb/sbt/bin/sbt.bat
