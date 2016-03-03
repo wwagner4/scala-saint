@@ -28,11 +28,12 @@ class TestImageStore extends FunSuite {
 
       val src = Source.single(List(rec))
       val sink = store.recordableIn(id)
-      Await.ready(src.runWith(sink).asInstanceOf[Future[_]], 5.seconds)
+      val cnt = Await.result(src.runWith(sink), 5.seconds)
+      println(s"wrote $cnt bytes")
 
       var result = List.empty[Recordable]
       val f = store.recordableOut(id).runForeach { x => result :+= x }
-      Await.ready(f, 5.second)
+      Await.result(f, 5.second)
 
       assert(result.size === 1)
       assert(result(0) === rec)

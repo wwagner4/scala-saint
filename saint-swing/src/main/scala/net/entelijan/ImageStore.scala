@@ -15,7 +15,7 @@ import akka.util.ByteString
 trait ImageStore {
 
   def recordableOut(id: String): Source[Recordable, _]
-  def recordableIn(id: String): Sink[Seq[Recordable], _]
+  def recordableIn(id: String): Sink[Seq[Recordable], Future[Long]]
 
 }
 
@@ -29,6 +29,8 @@ case class ImageStoreFilesys(dir: File) extends ImageStore with ImageStoreBase {
   require(dir.exists())
   require(dir.isDirectory())
 
+  
+  // TODO: Check the mat value
   def recordableOut(id: String): Source[Recordable, _] = {
     val file: File = getTxtFile(id).getOrElse(throw new IllegalStateException("no data found for id " + id))
 
@@ -37,13 +39,12 @@ case class ImageStoreFilesys(dir: File) extends ImageStore with ImageStoreBase {
     lines.map { line: String => upickle.default.read[Recordable](line) }
   }
 
-  def recordableIn(id: String): Sink[Seq[Recordable], _] = {
+  def recordableIn(id: String): Sink[Seq[Recordable], Future[Long]] = {
     val file = txtFile(id)
     
     val flow = Flow[Seq[Recordable]].map { write }
     val sink = FileIO.toFile(file, append = true)
 
-    // TODO: Difference between 'to', 'toMat'
     flow.toMat(sink)(Keep.right)
   }
 
