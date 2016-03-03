@@ -10,6 +10,7 @@ import scala.concurrent.duration.Duration._
 import scala.concurrent.duration._
 import akka.stream.Materializer
 import scala.concurrent.ExecutionContext.Implicits
+import scala.concurrent.Future
 
 class TestImageStore extends FunSuite {
 
@@ -27,8 +28,7 @@ class TestImageStore extends FunSuite {
 
       val src = Source.single(List(rec))
       val sink = store.recordableIn(id)
-      src.runWith(sink)
-      Thread.sleep(100)
+      Await.ready(src.runWith(sink).asInstanceOf[Future[_]], 5.seconds)
 
       var result = List.empty[Recordable]
       val f = store.recordableOut(id).runForeach { x => result :+= x }
@@ -54,8 +54,7 @@ class TestImageStore extends FunSuite {
 
       val src = Source.single(List(rec1, rec2))
       val sink = store.recordableIn(id)
-      src.runWith(sink)
-      Thread.sleep(100)
+      Await.ready(src.runWith(sink).asInstanceOf[Future[_]], 5.seconds)
 
       var result = Seq.empty[Recordable]
       val f = store.recordableOut(id).runForeach { x => result :+= x }
@@ -82,13 +81,11 @@ class TestImageStore extends FunSuite {
 
       val src1 = Source.single(List(rec1))
       val sink1 = store.recordableIn(id)
-      src1.runWith(sink1)
-      Thread.sleep(100)
+      Await.ready(src1.runWith(sink1).asInstanceOf[Future[_]], 5.seconds)
 
       val src2 = Source.single(List(rec2))
       val sink2 = store.recordableIn(id)
-      src2.runWith(sink2)
-      Thread.sleep(100)
+      Await.ready(src2.runWith(sink2).asInstanceOf[Future[_]], 5.seconds)
 
       var result = List.empty[Recordable]
       val f = store.recordableOut(id).runForeach { x => result :+= x }
@@ -121,8 +118,7 @@ class TestImageStore extends FunSuite {
       val recs = someRecs
       val src = Source.single(recs)
       val sink = store.recordableIn(id)
-      src.runWith(sink)
-      Thread.sleep(100)
+      Await.ready(src.runWith(sink).asInstanceOf[Future[_]], 5.seconds)
     }
     implicit val sys = ActorSystem.create()
     try {
