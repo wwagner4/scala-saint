@@ -23,12 +23,12 @@ class TestImageStore extends FunSuite {
       val id = "1";
 
       val dir = createGetEmptyTestdir(id)
-      val store = ImageStoreFilesys(dir)
+      val store: ImageStore = ImageStoreFilesys(dir)
       val rec = REC_ColorWhite
 
       val src = Source.single(List(rec))
       val sink = store.recordableIn(id)
-      val cnt = Await.result(src.runWith(sink), 5.seconds)
+      val cnt: Long = Await.result(src.runWith(sink), 5.seconds) 
       println(s"wrote $cnt bytes")
 
       var result = List.empty[Recordable]
