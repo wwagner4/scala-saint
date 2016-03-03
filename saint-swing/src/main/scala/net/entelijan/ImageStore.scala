@@ -30,7 +30,6 @@ case class ImageStoreFilesys(dir: File) extends ImageStore with ImageStoreBase {
   require(dir.isDirectory())
 
   
-  // TODO: Check the mat value
   def recordableOut(id: String): Source[Recordable, _] = {
     val file: File = getTxtFile(id).getOrElse(throw new IllegalStateException("no data found for id " + id))
 
