@@ -37,24 +37,24 @@ trait DisplayTextAware {
 sealed trait ControllerMode extends DisplayTextAware
 
 case object CM_Draw extends ControllerMode {
-  val displayText = "//"
+  val displayText = "paint"
 }
 
 case object CM_Translate extends ControllerMode {
-  val displayText = "<-|->"
+  val displayText = "move"
 }
 
 case object CM_ZoomIn extends ControllerMode {
-  val displayText = "(+)"
+  val displayText = "z.in"
 }
 
 case object CM_ZoomOut extends ControllerMode {
-  val displayText = "(-)"
+  val displayText = "z.out"
 }
 
 trait RecorderReloader {
   def record(id: String, recordable: Recordable): Unit
-  def reload(id: String, consumer: RecordableConsumer): Future[Unit]
+  def reload(id: String, consumer: RecordableConsumer): Future[_]
 }
 
 trait RecordableConsumer {
