@@ -57,6 +57,26 @@ object SaintRoute extends Directives {
       pathSingleSlash {
         complete(html(OverviewPage().render(store)))
       } ~
+        path("txt2" / Rest) { id =>
+          val src: Source[ByteString, _] = store.recordableOut(id)
+            .grouped(150)
+            .map { upickle.default.write(_) }
+            .map { ByteString(_) }
+          val ct = MediaTypes.`text/plain` withCharset HttpCharsets.`UTF-8`
+          encodeResponse {
+            complete(HttpEntity.Chunked.fromData(ct, src))
+          }
+        } ~
+        path("txt1" / Rest) { id =>
+          val src: Source[ByteString, _]  = store.recordableOut(id)
+            .grouped(Int.MaxValue)
+            .map { upickle.default.write(_) }
+            .map { ByteString(_) }
+          val ct = MediaTypes.`text/plain` withCharset HttpCharsets.`UTF-8`
+          encodeResponse {
+            complete(HttpEntity.Chunked.fromData(ct, src))
+          }
+        } ~
         path("editnew") {
           complete(html(EditorPage.render(EM_New)))
         } ~
@@ -74,26 +94,6 @@ object SaintRoute extends Directives {
           sys.shutdown()
           complete(StatusCodes.ServiceUnavailable, "Server stopped!")
         } ~
-        path("txt1" / Rest) { id =>
-          val recSeq = store.recordableOut(id).grouped(Int.MaxValue)
-          val src = recSeq
-            .map { upickle.default.write(_) }
-            .map { ByteString(_) }
-          val ct = MediaTypes.`text/plain` withCharset HttpCharsets.`UTF-8`
-          encodeResponse {
-            complete(HttpEntity.Chunked.fromData(ct, src))
-          }
-        } ~
-        path("txt2" / Rest) { id =>
-          val recSeq = store.recordableOut(id).grouped(150)
-          val src = recSeq
-            .map { upickle.default.write(_) }
-            .map { ByteString(_) }
-          val ct = MediaTypes.`text/plain` withCharset HttpCharsets.`UTF-8`
-          encodeResponse {
-            complete(HttpEntity.Chunked.fromData(ct, src))
-          }
-        } ~
         extractUnmatchedPath { p =>
           complete(StatusCodes.NotFound, "Path not found '%s'" format p)
         }
@@ -103,10 +103,11 @@ object SaintRoute extends Directives {
           entity(SaintTransportUnmarshaller()) { transp =>
             val id = transp.id
             val recs = transp.recordables
-            val f = Source.single(recs).runWith(store.recordableIn(id))
-            val mag = Future.failed[Unit](new IllegalStateException(""))
-            onComplete(f) {
-              case Success(v)  => complete("")
+
+            val result = Source.single(recs).runWith(store.recordableIn(id))
+            
+            onComplete(result) {
+              case Success(byteCnt)  => complete(byteCnt.toString())
               case Failure(ex) => complete(StatusCodes.InternalServerError, ex.getMessage)
             }
           }
@@ -123,17 +124,12 @@ object SaintRoute extends Directives {
 
   case class SaintTransportUnmarshaller() extends Unmarshaller[HttpRequest, SaintTransport] {
 
-    def apply(value: HttpRequest)(implicit ec: ExecutionContext, mat: Materializer): Future[SaintTransport] = {
-      val e: RequestEntity = value.entity
-      value.entity match {
+    def apply(request: HttpRequest)(implicit ec: ExecutionContext, mat: Materializer): Future[SaintTransport] = {
+      request.entity match {
         case HttpEntity.Strict(ctype, byteString) =>
           val str = byteString.decodeString("UTF-8")
           val transp = upickle.default.read[SaintTransport](str)
           Future(transp)
-        case HttpEntity.Default(ctype, length, srcOfByteStrings) =>
-          srcOfByteStrings
-            .runFold("") { (cuml, chunk) => cuml + chunk.decodeString("UTF-8") }
-            .map { str => upickle.default.read[SaintTransport](str) }
         case _ => throw new IllegalStateException("Unsupported entity type")
       }
     }
