@@ -65,8 +65,8 @@ trait SaintSwing {
 
     top.setContentPane(cp)
     top.setTitle("Saint")
-    //  top.setSize(new Dimension(screenSize.width, screenSize.height))
-    top.setSize(new Dimension(700, 600))
+    top.setSize(new Dimension(screenSize.width, screenSize.height))
+    //top.setSize(new Dimension(700, 600))
     top.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
     top.setVisible(true)
 
