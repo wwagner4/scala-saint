@@ -24,12 +24,12 @@ import doctus.core.framework.DefaultDraggableController
 
 object SaintSwingHttp extends App with SaintSwing {
 
-  val hostName = "wallace.lan"
-  //val hostName = "entelijan.net"
+  //val hostName = "wallace.lan"
+  val hostName = "entelijan.net"
 
   val port = 8099
 
-  val editMode = EM_Existing("1447455154972")
+  val editMode = EM_Existing("1456459248517")
   //val editMode = EM_New
 
   println(s"host: $hostName:$port")
@@ -43,8 +43,9 @@ object SaintSwingHttp extends App with SaintSwing {
 
     val clientFlow: Flow[HttpRequest, HttpResponse, _] =
       Http(system).outgoingConnection(host = hostName, port = port)
-    val recRel: RecorderReloader = RecorderReloaderHttp(sched, clientFlow, mat)
     println("Client-Http: Connectong to '%s:%d'" format (hostName, port))
+
+    val recRel: RecorderReloader = RecorderReloaderHttp(sched, clientFlow, mat)
 
     // Common to all Platforms
     val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
@@ -73,7 +74,8 @@ case class RecorderReloaderHttp(
     Source.single(id)
       .map(id => mapIdToHttpRequest(id))
       .via(clientFlow)
-      .map(resp => responseToChunkSource(resp)).map { srcChunk =>
+      .map(resp => responseToChunkSource(resp))
+      .map { srcChunk: Source[HttpEntity.ChunkStreamPart, _] =>
         srcChunk
           .map(chunkedStreamPart => chunkedStreamPart.data().decodeString("UTF-8"))
           .map(string => upickle.default.read[Seq[Recordable]](string))
@@ -86,23 +88,15 @@ case class RecorderReloaderHttp(
   def recordTransport(transp: SaintTransport): Unit = {
 
     def toHttpRequest(transp: SaintTransport): HttpRequest = {
-      val content = upickle.default.write(transp)
+      val content: String = upickle.default.write(transp)
       val headers = List(RawHeader("Content-Encoding", "gzip"))
       HttpRequest(method = POST, uri = Uri("/saint"), entity = content, headers = headers)
-    }
-
-    val sink = Sink.foreach { resp: HttpResponse =>
-      val status = resp.status
-      if (status.isFailure()) {
-        println("Sending data to the server resulted in a failure. %d - %s"
-          format (status.intValue(), status.reason()))
-      }
     }
 
     Source.single(transp)
       .map(transp => toHttpRequest(transp))
       .via(clientFlow)
-      .runWith(sink)(mat)
+      .runWith(Sink.ignore)(mat)
   }
 
 }
