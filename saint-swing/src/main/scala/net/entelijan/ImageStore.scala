@@ -19,8 +19,10 @@ trait ImageStore {
 
 }
 
-case class ImageStoreFilesys(dir: File) extends ImageStore with ImageStoreBase {
+class ImageStoreFilesys(_dir: File) extends ImageStore with ImageStoreBase {
 
+  val dir = _dir
+  
   println("ImageStoreFilesys dir: " + dir)
 
   import scala.concurrent.ExecutionContext.Implicits.global

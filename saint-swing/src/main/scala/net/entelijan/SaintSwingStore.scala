@@ -28,7 +28,7 @@ object SaintSwingStore extends App with SaintSwing {
     editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
     sys: ActorSystem, mat: Materializer): Unit = {
 
-    val store = ImageStoreFilesys(workdir)
+    val store = new ImageStoreFilesys(workdir)
     val recRel: RecorderReloader = RecorderReloaderStore(sched, store, mat)
 
     // Common to all Platforms

@@ -23,7 +23,7 @@ class TestImageStore extends FunSuite {
       val id = "1";
 
       val dir = createGetEmptyTestdir(id)
-      val store: ImageStore = ImageStoreFilesys(dir)
+      val store: ImageStore = new ImageStoreFilesys(dir)
       val rec = REC_ColorWhite
 
       val src = Source.single(List(rec))
@@ -49,7 +49,7 @@ class TestImageStore extends FunSuite {
 
       val id = "2";
       val dir = createGetEmptyTestdir(id)
-      val store = ImageStoreFilesys(dir)
+      val store = new ImageStoreFilesys(dir)
       val rec1 = REC_ColorWhite
       val rec2 = REC_ColorBlack
 
@@ -76,7 +76,7 @@ class TestImageStore extends FunSuite {
 
       val id = "3";
       val dir = createGetEmptyTestdir(id)
-      val store = ImageStoreFilesys(dir)
+      val store = new ImageStoreFilesys(dir)
       val rec1 = REC_ColorWhite
       val rec2 = REC_ColorBlack
 
@@ -125,7 +125,7 @@ class TestImageStore extends FunSuite {
     try {
       implicit val mat = ActorMaterializer()
       val dir = createGetEmptyTestdir("some-ids")
-      val store = ImageStoreFilesys(dir)
+      val store = new ImageStoreFilesys(dir)
       val renderer = ImageRendererFilesys(dir)
       addSomeRecs(store, "a")
       addSomeRecs(store, "b")

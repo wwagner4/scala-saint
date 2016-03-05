@@ -50,33 +50,13 @@ trait ImageRenderer {
   def imageOut(id: String, size: ImageSize)(implicit mat: Materializer): Source[ByteString, _]
 }
 
-case class ImageRendererFilesys(dir: File) extends ImageRenderer with ImageStoreBase {
-
-  println("ImageStoreFilesys dir: " + dir)
+case class ImageRendererFilesys(_dir: File) extends ImageStoreFilesys(_dir) with ImageRenderer {
 
   import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.duration._
 
   require(dir.exists())
   require(dir.isDirectory())
-
-  def recordableOut(id: String): Source[Recordable, Future[_]] = {
-    val file: File = getTxtFile(id).getOrElse(throw new IllegalStateException("no data found for id " + id))
-
-    val lines: Source[String, Future[_]] = FileLinesSource(file)
-
-    lines.map { line: String => upickle.default.read[Recordable](line) }
-  }
-
-  def recordableIn(id: String): Sink[Seq[Recordable], Future[_]] = {
-    val file = txtFile(id)
-    val flow = Flow[Seq[Recordable]].map { recs =>
-      val lines = recs.map { upickle.default.write(_) }
-      ByteString(lines.mkString("", "\n", "\n"))
-    }
-    val sink = FileIO.toFile(file, append = true)
-    flow.toMat(sink)(Keep.right)
-  }
 
   val imgTyp = "png"
 
