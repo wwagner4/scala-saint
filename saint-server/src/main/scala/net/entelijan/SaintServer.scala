@@ -130,6 +130,10 @@ object SaintRoute extends Directives {
           val str = byteString.decodeString("UTF-8")
           val transp = upickle.default.read[SaintTransport](str)
           Future(transp)
+        case HttpEntity.Default(ctype, length, srcOfByteStrings) =>
+          srcOfByteStrings
+            .runFold("") { (cuml, chunk) => cuml + chunk.decodeString("UTF-8") }
+            .map { str => upickle.default.read[SaintTransport](str) }
         case _ => throw new IllegalStateException("Unsupported entity type")
       }
     }
