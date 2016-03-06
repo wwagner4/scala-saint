@@ -10,11 +10,9 @@ import doctus.core.util.DoctusPoint
  *
  * Reloading is not defined in that thread
  */
-trait RecorderReloaderBuffering extends RecorderReloader {
+trait RecorderReloaderBufferingImpl extends RecorderReloader with RecorderReloaderBuffering {
 
   def sched: DoctusScheduler
-
-  def recordTransport(t: SaintTransport)
 
   def record(id: String, rec: Recordable): Unit = {
     if (!allRecordables.contains(id)) {

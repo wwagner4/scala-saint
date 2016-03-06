@@ -57,6 +57,11 @@ trait RecorderReloader {
   def reload(id: String, consumer: RecordableConsumer): Future[_]
 }
 
+trait RecorderReloaderBuffering {
+  def recordTransport(t: SaintTransport)
+  def reload(id: String, consumer: RecordableConsumer): Future[_]
+}
+
 trait RecordableConsumer {
   def consume(recordable: Recordable): Unit
 }
@@ -76,7 +81,7 @@ trait SAffine {
 case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloader) extends DoctusDraggableFramework with RecordableConsumer {
 
   import scala.concurrent.ExecutionContext.Implicits.global
-  
+
   override def frameRate = Some(60)
 
   var saffine: SaintAffine = SaintAffine(0, 0, 1)
@@ -94,7 +99,7 @@ case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanva
   def consume(r: Recordable): Unit = {
     val recTransformed = r match {
       case _: REC_DrawUnrecorded => r
-      case _ => saffine.transformReload(r)
+      case _                     => saffine.transformReload(r)
     }
     recordablesBuffer ::= recTransformed
   }

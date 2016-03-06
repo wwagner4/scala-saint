@@ -55,7 +55,7 @@ object SaintSwingHttp extends App with SaintSwing {
 
 case class RecorderReloaderHttp(
   sched: DoctusScheduler, clientFlow: Flow[HttpRequest, HttpResponse, _], mat: Materializer)
-    extends RecorderReloaderBuffering {
+    extends RecorderReloaderBufferingImpl {
 
   def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
 
