@@ -45,7 +45,7 @@ object SaintSwingHttp extends App with SaintSwing {
       Http(system).outgoingConnection(host = hostName, port = port)
     println("Client-Http: Connectong to '%s:%d'" format (hostName, port))
 
-    val recRel: RecorderReloaderBasic = RecorderReloaderHttp(sched, clientFlow, mat)
+    val recRel: RecorderReloader = RecorderReloaderHttp(sched, clientFlow, mat)
 
     // Common to all Platforms
     val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
@@ -55,7 +55,7 @@ object SaintSwingHttp extends App with SaintSwing {
 
 case class RecorderReloaderHttp(
   sched: DoctusScheduler, clientFlow: Flow[HttpRequest, HttpResponse, _], mat: Materializer)
-    extends RecorderReloaderBufferingImpl {
+    extends RecorderReloaderBuffering {
 
   def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
 

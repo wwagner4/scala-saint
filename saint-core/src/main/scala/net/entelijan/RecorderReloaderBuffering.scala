@@ -3,9 +3,14 @@ package net.entelijan
 import doctus.core._
 import doctus.core.color._
 import doctus.core.util.DoctusPoint
-import scala.concurrent.Future
 
-trait RecorderReloaderBufferingImpl extends RecorderReloaderBasic with RecorderReloaderBuffering {
+/**
+ * Implements recording of SaintTransport elements.
+ * These elements are buffered locally and sent every 200 seconds
+ *
+ * Reloading is not defined in that thread
+ */
+trait RecorderReloaderBuffering extends RecorderReloader {
 
   def sched: DoctusScheduler
 
@@ -18,8 +23,6 @@ trait RecorderReloaderBufferingImpl extends RecorderReloaderBasic with RecorderR
     allRecordables(id) ::= rec
   }
 
-  sched.start(recordBuffered, 200)
-  
   private var allRecordables = scala.collection.mutable.Map.empty[String, List[Recordable]]
 
   private def recordBuffered(): Unit = {
@@ -41,6 +44,8 @@ trait RecorderReloaderBufferingImpl extends RecorderReloaderBasic with RecorderR
       allRecordables(id) = recordBuffered(id, allRecordables(id))
     }
   }
+
+  sched.start(recordBuffered, 200)
 
 }
 
