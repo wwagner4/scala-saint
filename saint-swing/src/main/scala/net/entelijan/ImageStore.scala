@@ -25,7 +25,6 @@ class ImageStoreFilesys(_dir: File) extends ImageStore with ImageStoreBase {
   println("ImageStoreFilesys dir: " + dir)
 
   import scala.concurrent.ExecutionContext.Implicits.global
-  import scala.concurrent.duration._
 
   require(dir.exists())
   require(dir.isDirectory())
