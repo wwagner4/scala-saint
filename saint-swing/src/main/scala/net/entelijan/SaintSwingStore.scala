@@ -29,7 +29,7 @@ object SaintSwingStore extends App with SaintSwing {
     sys: ActorSystem, mat: Materializer): Unit = {
 
     val store = new ImageStoreFilesys(workdir)
-    val recRel: RecorderReloader = RecorderReloaderStore(sched, store, mat)
+    val recRel: RecorderReloaderBasic = RecorderReloaderStore(sched, store, mat)
 
     // Common to all Platforms
     val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
@@ -37,7 +37,7 @@ object SaintSwingStore extends App with SaintSwing {
   }
 }
 
-case class RecorderReloaderStore(sched: DoctusScheduler, store: ImageStore, mat: Materializer) extends RecorderReloaderBuffering {
+case class RecorderReloaderStore(sched: DoctusScheduler, store: ImageStore, mat: Materializer) extends RecorderReloaderBufferingImpl {
 
   def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
     store.recordableOut(id)

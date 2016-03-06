@@ -9,14 +9,9 @@ import scala.concurrent.Future
 import doctus.core.color.DoctusColorRgb
 import doctus.core.color.DoctusColorBlack
 
-case class SaintTransport(id: String, recordables: Seq[Recordable])
-
 sealed trait Recordable
 
 case class REC_Draw(fromx: Double, fromy: Double, tox: Double, toy: Double) extends Recordable
-
-// Needed to distinguish if a draw-directive was already recorded or not
-case class REC_DrawUnrecorded(fromx: Double, fromy: Double, tox: Double, toy: Double) extends Recordable
 
 case class REC_Color(r: Int, g: Int, b: Int) extends Recordable
 
@@ -29,6 +24,25 @@ case object REC_ColorBlack extends Recordable
 case object REC_ColorWhite extends Recordable
 
 case object REC_Cleanup extends Recordable
+
+// Needed to distinguish if a draw-directive was already recorded or not
+case class REC_DrawUnrecorded(fromx: Double, fromy: Double, tox: Double, toy: Double) extends Recordable
+
+case class SaintTransport(id: String, recordables: Seq[Recordable])
+
+trait RecorderReloaderBuffering {
+  def recordTransport(t: SaintTransport)
+  def reload(id: String, consumer: RecordableConsumer): Future[_]
+}
+
+trait RecordableConsumer {
+  def consume(recordable: Recordable): Unit
+}
+
+trait RecorderReloaderBasic {
+  def record(id: String, recordable: Recordable): Unit
+  def reload(id: String, consumer: RecordableConsumer): Future[_]
+}
 
 trait DisplayTextAware {
   def displayText: String
@@ -52,28 +66,16 @@ case object CM_ZoomOut extends ControllerMode {
   val displayText = "z.out"
 }
 
-trait RecorderReloader {
-  def record(id: String, recordable: Recordable): Unit
-  def reload(id: String, consumer: RecordableConsumer): Future[_]
-}
-
-trait RecordableConsumer {
-  def consume(recordable: Recordable): Unit
-}
-
 sealed trait Editmode
 case object EM_New extends Editmode
 case class EM_Existing(id: String) extends Editmode
 
 trait SAffine {
-
   def transformRecord(r: Recordable): Recordable
-
   def transformReload(r: Recordable): Recordable
-
 }
 
-case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloader) extends DoctusDraggableFramework with RecordableConsumer {
+case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloaderBasic) extends DoctusDraggableFramework with RecordableConsumer {
 
   import scala.concurrent.ExecutionContext.Implicits.global
   

@@ -32,7 +32,7 @@ object SaintScalaJs {
 
   }
 
-  case class RecorderReloaderScalaJs(sched: DoctusScheduler) extends RecorderReloaderBuffering {
+  case class RecorderReloaderScalaJs(sched: DoctusScheduler) extends RecorderReloaderBufferingImpl {
 
     def recordTransport(transp: SaintTransport): Unit = {
       val data = upickle.default.write(transp)
@@ -42,8 +42,8 @@ object SaintScalaJs {
     def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
       Future {
         val reqStr = s"/txt1/$id"
-        val fresp = Ajax.get(reqStr)
-        fresp.foreach { req =>
+        val reqFuture = Ajax.get(reqStr)
+        reqFuture.foreach { req =>
           val jsonStr = req.responseText
           val recs: Seq[Recordable] = upickle.default.read[Seq[Recordable]](jsonStr)
           recs.foreach { rec =>
