@@ -1,9 +1,6 @@
 package net.entelijan
 
-import java.io.File
-import akka.stream.Materializer
-
-case class OverviewPage(implicit mat: Materializer) {
+case object OverviewPage {
 
   def render(renderer: ImageRenderer): String = {
     val ids = renderer.ids

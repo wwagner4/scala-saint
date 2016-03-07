@@ -28,7 +28,7 @@ object SaintServer extends App {
 
   val config = detectConfig
 
-  Http().bindAndHandle(SaintRoute(config, system), config.host, config.port).onComplete {
+  Http().bindAndHandle(SaintRoute(system, materializer), config.host, config.port).onComplete {
     case Success(b) =>
       val host = b.localAddress.getHostName
       val port = b.localAddress.getPort
@@ -52,18 +52,21 @@ object SaintRoute extends Directives {
   val dir = FileUtil.dir(List("saint", "data"))
   val store = ImageRendererFilesys(dir)
 
-  def apply(config: Config, sys: ActorSystem)(implicit mat: Materializer): Route = {
+  def apply(sys: ActorSystem, mat: Materializer): Route = {
     get {
       pathSingleSlash {
-        complete(html(OverviewPage().render(store)))
+        complete(html(OverviewPage.render(store)))
       } ~
         path("txt2" / Rest) { id =>
+          
           val src: Source[ByteString, _] = store.recordableOut(id)
             .grouped(150)
             .map { upickle.default.write(_) }
             .map { ByteString(_) }
-          val ct = MediaTypes.`text/plain` withCharset HttpCharsets.`UTF-8`
-          encodeResponse {
+          
+            val ct = MediaTypes.`text/plain` withCharset HttpCharsets.`UTF-8`
+          
+            encodeResponse {
             complete(HttpEntity.Chunked.fromData(ct, src))
           }
         } ~
@@ -101,10 +104,8 @@ object SaintRoute extends Directives {
       post {
         path("saint") {
           entity(SaintTransportUnmarshaller()) { transp =>
-            val id = transp.id
-            val recs = transp.recordables
-
-            val result = Source.single(recs).runWith(store.recordableIn(id))
+            val result = Source.single(transp.recordables)
+              .runWith(store.recordableIn(transp.id))(mat)
             
             onComplete(result) {
               case Success(byteCnt)  => complete(byteCnt.toString())
