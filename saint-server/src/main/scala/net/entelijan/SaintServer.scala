@@ -58,20 +58,20 @@ object SaintRoute extends Directives {
         complete(html(OverviewPage.render(store)))
       } ~
         path("txt2" / Rest) { id =>
-          
+
           val src: Source[ByteString, _] = store.recordableOut(id)
-            .grouped(500)
+            .grouped(200)
             .map { upickle.default.write(_) }
             .map { ByteString(_) }
-          
-            val ct = MediaTypes.`text/plain` withCharset HttpCharsets.`UTF-8`
-          
-            encodeResponse {
+
+          val ct = MediaTypes.`text/plain` withCharset HttpCharsets.`UTF-8`
+
+          encodeResponse {
             complete(HttpEntity.Chunked.fromData(ct, src))
           }
         } ~
         path("txt1" / Rest) { id =>
-          val src: Source[ByteString, _]  = store.recordableOut(id)
+          val src: Source[ByteString, _] = store.recordableOut(id)
             .grouped(Int.MaxValue)
             .map { upickle.default.write(_) }
             .map { ByteString(_) }
@@ -106,10 +106,10 @@ object SaintRoute extends Directives {
           entity(SaintTransportUnmarshaller()) { transp =>
             val result = Source.single(transp.recordables)
               .runWith(store.recordableIn(transp.id))(mat)
-            
+
             onComplete(result) {
-              case Success(byteCnt)  => complete(byteCnt.toString())
-              case Failure(ex) => complete(StatusCodes.InternalServerError, ex.getMessage)
+              case Success(byteCnt) => complete(byteCnt.toString())
+              case Failure(ex)      => complete(StatusCodes.InternalServerError, ex.getMessage)
             }
           }
         } ~
