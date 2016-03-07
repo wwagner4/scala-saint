@@ -60,7 +60,7 @@ object SaintRoute extends Directives {
         path("txt2" / Rest) { id =>
           
           val src: Source[ByteString, _] = store.recordableOut(id)
-            .grouped(150)
+            .grouped(500)
             .map { upickle.default.write(_) }
             .map { ByteString(_) }
           
