@@ -8,6 +8,8 @@ import doctus.math.Affine
 import scala.concurrent.Future
 import doctus.core.color.DoctusColorRgb
 import doctus.core.color.DoctusColorBlack
+import scala.util.Success
+import scala.util.Failure
 
 trait RecorderReloaderBuffering {
   def recordTransport(t: SaintTransport)
@@ -156,7 +158,8 @@ case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanva
   reloadComp.onClick { () =>
     consume(REC_Cleanup)
     recRel.reload(id, this) onComplete {
-      case _ => reactingToUserInput = true
+      case Success(v) => reactingToUserInput = true
+      case Failure(ex) => reactingToUserInput = true; println(s"reloaded: Failure $ex")
     }
   }
 
@@ -256,7 +259,10 @@ case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanva
     saffine = saffine.copy(xoff = xoff1, yoff = yoff1)
 
     consume(REC_Cleanup)
-    recRel.reload(id, this)
+    recRel.reload(id, this) onComplete {
+      case Success(v) => // Nothing to do
+      case Failure(ex) => println(s"reloaded: Failure $ex")
+    }
   }
 
   private def zoomIn(from: DoctusPoint, to: DoctusPoint, canvas: DoctusCanvas) = {
@@ -273,7 +279,10 @@ case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanva
     engine.strokeWidth = (engine.strokeWidth * s1).round.toInt
 
     consume(REC_Cleanup)
-    recRel.reload(id, this)
+    recRel.reload(id, this)onComplete {
+      case Success(v) => // Nothing to do
+      case Failure(ex) => println(s"reloaded: Failure $ex")
+    }
   }
 
   private def zoomOut(from: DoctusPoint, to: DoctusPoint, canvas: DoctusCanvas) = {
@@ -289,7 +298,10 @@ case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanva
 
     saffine = saffine.copy(xoff = dx, yoff = dy, scale = s1)
     consume(REC_Cleanup)
-    recRel.reload(id, this)
+    recRel.reload(id, this) onComplete {
+      case Success(v) => // Nothing to do
+      case Failure(ex) => println(s"reloaded: Failure $ex")
+    }
   }
 
   private def drawGraphic(g: DoctusGraphics): Unit = {

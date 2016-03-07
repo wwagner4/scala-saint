@@ -1,7 +1,6 @@
 package net.entelijan
 
 import scala.concurrent.Future
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpEntity
@@ -21,6 +20,8 @@ import doctus.core.DoctusCanvas
 import doctus.core.DoctusDraggable
 import doctus.core.DoctusScheduler
 import doctus.core.framework.DefaultDraggableController
+import scala.util.Success
+import scala.util.Failure
 
 object SaintSwingHttp extends App with SaintSwing {
 
@@ -34,7 +35,7 @@ object SaintSwingHttp extends App with SaintSwing {
 
   println(s"host: $hostName:$port")
   println(s"editMode: $editMode")
-  
+
   run
 
   def runController(
@@ -57,6 +58,8 @@ case class RecorderReloaderHttp(
   sched: DoctusScheduler, clientFlow: Flow[HttpRequest, HttpResponse, _], mat: Materializer)
     extends RecorderReloaderBufferingImpl {
 
+  import scala.concurrent.ExecutionContext.Implicits.global
+
   def reload(id: String, consumer: RecordableConsumer): Future[Unit] = {
 
     def mapIdToHttpRequest(id: String): HttpRequest = {
@@ -70,18 +73,23 @@ case class RecorderReloaderHttp(
         case any => throw new IllegalStateException("Illegal Response. %s" format any)
       }
     }
-
     Source.single(id)
       .map(id => mapIdToHttpRequest(id))
       .via(clientFlow)
       .map(resp => responseToChunkSource(resp))
       .map { srcChunk: Source[HttpEntity.ChunkStreamPart, _] =>
-        srcChunk
-          .map(chunkedStreamPart => chunkedStreamPart.data().decodeString("UTF-8"))
+        val result = srcChunk
+          .map {chunkedStreamPart => chunkedStreamPart.data().decodeString("UTF-8")}
+          .filter{str => str.length() > 0}
           .map(string => upickle.default.read[Seq[Recordable]](string))
           .runForeach(recList => recList.foreach { rec =>
             consumer.consume(rec)
           })(mat)
+
+        result.onComplete {
+          case Success(v)  => // Nothing to do
+          case Failure(ex) => println(s"reloadedChunk: Failure $ex")
+        }
       }.runWith(Sink.ignore)(mat)
   }
 

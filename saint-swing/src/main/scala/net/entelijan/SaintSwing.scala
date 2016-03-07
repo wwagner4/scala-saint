@@ -6,9 +6,7 @@ import java.awt.Toolkit
 import java.awt.event.WindowEvent
 import java.awt.event.WindowListener
 import java.io.File
-
 import com.typesafe.config.ConfigFactory
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.Materializer
@@ -21,16 +19,22 @@ import doctus.swing.DoctusDraggableSwing
 import doctus.swing.DoctusSchedulerSwing
 import javax.swing.JFrame
 import javax.swing.JPanel
+import com.typesafe.config.Config
 
 case class ServerConfig(hostName: String, port: Int)
 
 trait SaintSwing {
 
-  def editMode : Editmode
+  def editMode: Editmode
 
   def run: Unit = {
-    
-    implicit val system = ActorSystem()
+
+    val myConfig = ConfigFactory.parseString("akka.http.client.parsing.max-content-length=100m");
+    val regularConfig = ConfigFactory.load()
+    val combined = myConfig.withFallback(regularConfig)
+    val complete = ConfigFactory.load(combined)
+
+    implicit val system = ActorSystem("sys", complete)
     implicit val materializer = ActorMaterializer()
 
     val top = new JFrame()
