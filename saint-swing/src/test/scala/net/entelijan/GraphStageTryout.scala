@@ -24,9 +24,7 @@ object GraphStageTryout extends App {
   
   val src = Source.fromIterator { () => (1 to 10).toList.iterator }
   
-  def f(in: Int): Int = in * 2
-  
-  val map = new Monitor[Int, Int](f)
+  val map = new Monitor[Int]
   
   val r = src
     .via(map)
@@ -37,10 +35,10 @@ object GraphStageTryout extends App {
   sys.shutdown()
 }
 
-class Monitor[A, B](f: A => B) extends GraphStage[FlowShape[A, B]] {
+class Monitor[A] extends GraphStage[FlowShape[A, A]] {
  
   val in = Inlet[A]("Map.in")
-  val out = Outlet[B]("Map.out")
+  val out = Outlet[A]("Map.out")
  
   override val shape = FlowShape.of(in, out)
   
@@ -53,7 +51,7 @@ class Monitor[A, B](f: A => B) extends GraphStage[FlowShape[A, B]] {
           val now = System.currentTimeMillis()
           time.foreach { prev => println(now - prev) }
           time = Some(now)
-          push(out, f(grab(in)))
+          push(out, grab(in))
         }
       })
       setHandler(out, new OutHandler {
