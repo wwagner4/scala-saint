@@ -32,9 +32,9 @@ class SaintMonitor[A] extends GraphStage[FlowShape[A, A]] {
             sum += diff
             cnt += 1
           }
-          if (now - startTime > 500) {
+          if (now - startTime > 1000) {
             val avr = sum.toDouble / cnt
-            println("average throughput: %.3f" format avr)
+            println("-- %15.2f ms %10d" format (avr, cnt))
             startTime = now
             sum = 0
             cnt = 0
