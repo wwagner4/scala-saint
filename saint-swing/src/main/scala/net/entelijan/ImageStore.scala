@@ -34,6 +34,7 @@ class ImageStoreFilesys(_dir: File) extends ImageStore with ImageStoreBase {
 
     FileIO.fromFile(file)
       .via(Framing.delimiter(ByteString("\n"), 100000))
+      .via(new SaintMonitor)
       .map { bs: ByteString => bs.utf8String }
       .map { line: String => upickle.default.read[Recordable](line) }
   }
@@ -41,15 +42,16 @@ class ImageStoreFilesys(_dir: File) extends ImageStore with ImageStoreBase {
   def recordableIn(id: String): Sink[Seq[Recordable], Future[Long]] = {
     val file = txtFile(id)
 
+    def write(recs: Seq[Recordable]): ByteString = {
+      val lines: Seq[String] = recs.map { rec => upickle.default.write(rec) }
+      val str = lines.mkString("", "\n", "\n")
+      ByteString(str)
+    }
+
     Flow[Seq[Recordable]]
       .map { reqSeq: Seq[Recordable] => write(reqSeq) }
       .toMat(FileIO.toFile(file, append = true))(Keep.right)
   }
 
-  private def write(recs: Seq[Recordable]): ByteString = {
-    val lines: Seq[String] = recs.map { rec => upickle.default.write(rec) }
-    val str = lines.mkString("", "\n", "\n")
-    ByteString(str)
-  }
 }
 
