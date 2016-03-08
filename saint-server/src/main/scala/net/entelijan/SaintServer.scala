@@ -26,6 +26,8 @@ object SaintServer extends App {
   implicit val system = ActorSystem.create()
   implicit val materializer = ActorMaterializer()
 
+  val port = 8099
+
   val config = detectConfig
 
   Http().bindAndHandle(SaintRoute(system, materializer), config.host, config.port).onComplete {
@@ -42,8 +44,8 @@ object SaintServer extends App {
   def detectConfig: Config = {
     val name = java.net.InetAddress.getLocalHost.getCanonicalHostName
     val ip = java.net.InetAddress.getLocalHost.getHostAddress
-    if (name.contains("vadmin")) Config("entelijan.net", 8099)
-    else Config(name, 8099)
+    if (name.contains("vadmin")) Config("entelijan.net", port)
+    else Config(name, port)
   }
 }
 
