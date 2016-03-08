@@ -26,7 +26,7 @@ object GraphStageTryout extends App {
   
   def f(in: Int): Int = in * 2
   
-  val map = new Map[Int, Int](f)
+  val map = new Monitor[Int, Int](f)
   
   val r = src
     .via(map)
@@ -37,7 +37,7 @@ object GraphStageTryout extends App {
   sys.shutdown()
 }
 
-class Map[A, B](f: A => B) extends GraphStage[FlowShape[A, B]] {
+class Monitor[A, B](f: A => B) extends GraphStage[FlowShape[A, B]] {
  
   val in = Inlet[A]("Map.in")
   val out = Outlet[B]("Map.out")
