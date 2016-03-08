@@ -32,9 +32,10 @@ class SaintMonitor[A] extends GraphStage[FlowShape[A, A]] {
             sum += diff
             cnt += 1
           }
-          if (now - startTime > 1000) {
+          if (now - startTime > 500) {
             val avr = sum.toDouble / cnt
-            println("-- %15.2f ms %10d" format (avr, cnt))
+            val ps = 1000.0 / avr
+            println("-- %15.2f per sec %10d" format (ps, cnt))
             startTime = now
             sum = 0
             cnt = 0
