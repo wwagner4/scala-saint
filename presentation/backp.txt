@@ -1,0 +1,47 @@
+500ns
+
+--         1168.04 per sec        424
+--         2668.66 per sec       1337
+--         8371.26 per sec       4194
+--          946.77 per sec       4020
+--         1303.50 per sec       7340
+--          531.75 per sec       3140
+--          568.39 per sec       3345
+--          762.73 per sec       3340
+--          779.74 per sec       8050
+--          767.62 per sec       7905
+--          764.84 per sec       8115
+--          770.25 per sec       8110
+--          711.03 per sec       8110
+--           11.52 per sec         60
+--         1704.43 per sec       8050
+--          809.37 per sec       8415
+--          787.16 per sec       8310
+--          788.76 per sec       8110
+--          488.00 per sec       5530
+--            6.75 per sec         35
+--         1686.11 per sec       6650
+
+5000ns
+
+--         1263.40 per sec       6720
+--          341.34 per sec       3650
+--          288.06 per sec       2935
+--          213.14 per sec       3250
+--          159.53 per sec       3335
+--          215.61 per sec       3350
+--          179.99 per sec       3645
+--          142.55 per sec       3020
+--          163.68 per sec       3345
+--          162.81 per sec       3345
+--          176.41 per sec       3650
+--          192.49 per sec       3035
+--          165.29 per sec       3350
+--          109.84 per sec       3345
+--          164.39 per sec       3340
+--          165.48 per sec       3345
+--          216.69 per sec       3345
+--          162.57 per sec       3340
+--          160.87 per sec       3345
+--          164.97 per sec       3345
+
