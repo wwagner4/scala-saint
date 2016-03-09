@@ -34,7 +34,6 @@ class ImageStoreFilesys(_dir: File) extends ImageStore with ImageStoreBase {
 
     FileIO.fromFile(file)
       .via(Framing.delimiter(ByteString("\n"), 100000))
-      .via(new SaintMonitor)
       .map { bs: ByteString => bs.utf8String }
       .map { line: String => upickle.default.read[Recordable](line) }
   }
