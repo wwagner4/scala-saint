@@ -4,7 +4,6 @@ import scala.concurrent.ExecutionContext.Implicits
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpEntity
@@ -25,6 +24,7 @@ import doctus.core.DoctusDraggable
 import doctus.core.DoctusPointable
 import doctus.core.DoctusScheduler
 import doctus.core.template.DoctusTemplateControllerImpl
+import doctus.core.template.DoctusTemplateCanvas
 
 object SaintSwingHttp extends App with SaintSwing {
 
@@ -33,7 +33,7 @@ object SaintSwingHttp extends App with SaintSwing {
 
   val port = 8099
 
-  val editMode = EM_Existing("1456210674550")
+  val editMode = EM_Existing("1456297635929")
   //val editMode = EM_New
 
   println(s"host: $hostName:$port")
@@ -42,8 +42,7 @@ object SaintSwingHttp extends App with SaintSwing {
   run
 
   def runController(
-    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, pointable: DoctusPointable, draggable: DoctusDraggable,
-    system: ActorSystem, mat: Materializer): Unit = {
+    editMode: Editmode, canvas: DoctusTemplateCanvas, sched: DoctusScheduler, system: ActorSystem, mat: Materializer): Unit = {
 
     val clientFlow: Flow[HttpRequest, HttpResponse, _] =
       Http(system).outgoingConnection(host = hostName, port = port)
@@ -53,7 +52,7 @@ object SaintSwingHttp extends App with SaintSwing {
 
     // Common to all Platforms
     val framework = DoctusTemplateSaint(editMode, canvas, recRel)
-    DoctusTemplateControllerImpl(framework, sched, canvas, pointable, draggable)
+    DoctusTemplateControllerImpl(framework, sched, canvas)
   }
 }
 

@@ -9,6 +9,7 @@ import scala.concurrent.Future
 import scala.scalajs.js.annotation.JSExport
 import doctus.core.template.DoctusTemplateControllerImpl
 import doctus.scalajs.DoctusPointableScalajs
+import doctus.scalajs.DoctusTemplateCanvasScalajs
 
 @JSExport("SaintScalaJs")
 object SaintScalaJs {
@@ -20,16 +21,14 @@ object SaintScalaJs {
 
     val canvasElem: HTMLCanvasElement = dom.document.getElementById("canvas").asInstanceOf[HTMLCanvasElement]
 
-    val canvas = DoctusCanvasScalajs(canvasElem)
+    val canvas = DoctusTemplateCanvasScalajs(canvasElem)
     val sched = DoctusSchedulerScalajs
-    val draggable = DoctusDraggableScalajs(canvasElem)
-    val pointable = DoctusPointableScalajs(canvasElem)
 
     val mode = upickle.default.read[Editmode](editmode)
 
     // Common to all platforms
     val fw = DoctusTemplateSaint(mode, canvas, RecorderReloaderScalaJs(sched))
-    DoctusTemplateControllerImpl(fw, sched, canvas, pointable, draggable)
+    DoctusTemplateControllerImpl(fw, sched, canvas)
 
   }
 

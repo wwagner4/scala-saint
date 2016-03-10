@@ -13,11 +13,12 @@ import scala.util.Success
 import scala.util.Failure
 import doctus.core.DoctusPointable
 import doctus.core.template.DoctusTemplateControllerImpl
+import doctus.core.template.DoctusTemplateCanvas
 
 object SaintSwingStore extends App with SaintSwing {
 
   val workdir = FileUtil.dir(List("saint", "data"))
-  val editMode = EM_Existing("1456210674550")
+  val editMode = EM_Existing("1456297635929")
   //val editMode = EM_New
 
   println("workdir: " + workdir)
@@ -26,15 +27,14 @@ object SaintSwingStore extends App with SaintSwing {
   run
 
   def runController(
-    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, pointable: DoctusPointable, draggable: DoctusDraggable,
-    sys: ActorSystem, mat: Materializer): Unit = {
+    editMode: Editmode, canvas: DoctusTemplateCanvas, sched: DoctusScheduler, sys: ActorSystem, mat: Materializer): Unit = {
 
     val store = new ImageStoreFilesys(workdir)
     val recRel: RecorderReloader = RecorderReloaderStore(sched, store, mat)
 
     // Common to all Platforms
     val framework = DoctusTemplateSaint(editMode, canvas, recRel)
-    DoctusTemplateControllerImpl(framework, sched, canvas, pointable, draggable)
+    DoctusTemplateControllerImpl(framework, sched, canvas)
   }
 }
 
@@ -47,7 +47,7 @@ case class RecorderReloaderStore(sched: DoctusScheduler, store: ImageStore, mat:
 
   def recordTransport(transp: SaintTransport): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    
+
     val storeSink: Sink[Seq[Recordable], Future[_]] = store.recordableIn(transp.id)
 
     val result = Source.single(transp)
