@@ -33,7 +33,7 @@ object SaintSwingStore extends App with SaintSwing {
     val recRel: RecorderReloader = RecorderReloaderStore(sched, store, mat)
 
     // Common to all Platforms
-    val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
+    val framework = DoctusTemplateSaint(editMode, canvas, recRel)
     DoctusTemplateControllerImpl(framework, sched, canvas, pointable, draggable)
   }
 }

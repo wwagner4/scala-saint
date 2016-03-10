@@ -83,7 +83,7 @@ trait SAffine {
 
 }
 
-case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloader) extends DoctusTemplate with RecordableConsumer {
+case class DoctusTemplateSaint(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloader) extends DoctusTemplate with RecordableConsumer {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

@@ -52,7 +52,7 @@ object SaintSwingHttp extends App with SaintSwing {
     val recRel: RecorderReloader = RecorderReloaderHttp(sched, clientFlow, mat)
 
     // Common to all Platforms
-    val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
+    val framework = DoctusTemplateSaint(editMode, canvas, recRel)
     DoctusTemplateControllerImpl(framework, sched, canvas, pointable, draggable)
   }
 }
