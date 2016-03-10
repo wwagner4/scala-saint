@@ -17,17 +17,17 @@ trait DoctusTemplate {
 
   def frameRate: Option[Int] = Some(60)
 
-  def draw(g: DoctusGraphics): Unit
+  def onDraw(g: DoctusGraphics): Unit
 
-  def pointableStart(pos: DoctusPoint): Unit
+  def onPointableStart(pos: DoctusPoint): Unit
 
-  def pointableStop(pos: DoctusPoint): Unit
+  def onPointableStop(pos: DoctusPoint): Unit
 
-  def draggableStart(pos: DoctusPoint): Unit
+  def onDraggableStart(pos: DoctusPoint): Unit
 
-  def draggableStop(pos: DoctusPoint): Unit
+  def onDraggableStop(pos: DoctusPoint): Unit
 
-  def draggableDrag(pos: DoctusPoint): Unit
+  def onDraggableDrag(pos: DoctusPoint): Unit
 
 }
 
@@ -49,18 +49,18 @@ trait DoctusController[T <: DoctusTemplate] {
     sched.start(canvas.repaint, fr)
   }
 
-  // TODO There could be a graphic context on all these on... methods.
-  canvas.onRepaint(template.draw)
+  canvas.onRepaint(template.onDraw)
 
-  pointable.onStart(template.pointableStart)
+  // TODO There could be a graphic context on all these on... methods. ???
+  pointable.onStart(template.onPointableStart)
 
-  pointable.onStop(template.pointableStop)
+  pointable.onStop(template.onPointableStop)
 
-  draggable.onStart(template.draggableStart)
+  draggable.onStart(template.onDraggableStart)
 
-  draggable.onStop(template.draggableStop)
+  draggable.onStop(template.onDraggableStop)
 
-  draggable.onDrag(template.draggableDrag)
+  draggable.onDrag(template.onDraggableDrag)
 
 }
 
