@@ -19,15 +19,11 @@ trait DoctusTemplate {
 
   def onDraw(g: DoctusGraphics): Unit
 
-  def onPointableStart(pos: DoctusPoint): Unit
+  def pointablePressed(pos: DoctusPoint): Unit
 
-  def onPointableStop(pos: DoctusPoint): Unit
+  def pointableReleased(pos: DoctusPoint): Unit
 
-  def onDraggableStart(pos: DoctusPoint): Unit
-
-  def onDraggableStop(pos: DoctusPoint): Unit
-
-  def onDraggableDrag(pos: DoctusPoint): Unit
+  def pointableDragged(pos: DoctusPoint): Unit
 
 }
 
@@ -50,17 +46,12 @@ trait DoctusController[T <: DoctusTemplate] {
   }
 
   canvas.onRepaint(template.onDraw)
-
   // TODO There could be a graphic context on all these on... methods. ???
-  pointable.onStart(template.onPointableStart)
+  pointable.onStart(template.pointablePressed)
 
-  pointable.onStop(template.onPointableStop)
+  pointable.onStop(template.pointableReleased)
 
-  draggable.onStart(template.onDraggableStart)
-
-  draggable.onStop(template.onDraggableStop)
-
-  draggable.onDrag(template.onDraggableDrag)
+  draggable.onDrag(template.pointableDragged)
 
 }
 
