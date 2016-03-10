@@ -27,7 +27,7 @@ trait DoctusTemplate {
 
 }
 
-trait DoctusController[T <: DoctusTemplate] {
+trait DoctusTemplateController[T <: DoctusTemplate] {
 
   def template: T
 
@@ -55,12 +55,12 @@ trait DoctusController[T <: DoctusTemplate] {
 
 }
 
-case class DoctusControllerDefault[T <: DoctusTemplate](
+case class DoctusTemplateControllerImpl[T <: DoctusTemplate](
   template: T,
   sched: DoctusScheduler,
   canvas: DoctusCanvas,
   pointable: DoctusPointable,
-  draggable: DoctusDraggable) extends DoctusController[T]
+  draggable: DoctusDraggable) extends DoctusTemplateController[T]
 
 
 

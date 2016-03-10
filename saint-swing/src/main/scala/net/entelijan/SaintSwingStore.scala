@@ -12,7 +12,7 @@ import akka.stream.scaladsl.Sink
 import scala.util.Success
 import scala.util.Failure
 import doctus.core.DoctusPointable
-import doctus.core.template.DoctusControllerDefault
+import doctus.core.template.DoctusTemplateControllerImpl
 
 object SaintSwingStore extends App with SaintSwing {
 
@@ -34,7 +34,7 @@ object SaintSwingStore extends App with SaintSwing {
 
     // Common to all Platforms
     val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
-    DoctusControllerDefault(framework, sched, canvas, pointable, draggable)
+    DoctusTemplateControllerImpl(framework, sched, canvas, pointable, draggable)
   }
 }
 

@@ -1,6 +1,10 @@
 package net.entelijan
 
+import scala.concurrent.ExecutionContext.Implicits
 import scala.concurrent.Future
+import scala.util.Failure
+import scala.util.Success
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpEntity
@@ -18,11 +22,9 @@ import akka.stream.scaladsl.Sink
 import akka.stream.scaladsl.Source
 import doctus.core.DoctusCanvas
 import doctus.core.DoctusDraggable
-import doctus.core.DoctusScheduler
-import scala.util.Success
-import scala.util.Failure
 import doctus.core.DoctusPointable
-import doctus.core.template.DoctusControllerDefault
+import doctus.core.DoctusScheduler
+import doctus.core.template.DoctusTemplateControllerImpl
 
 object SaintSwingHttp extends App with SaintSwing {
 
@@ -51,7 +53,7 @@ object SaintSwingHttp extends App with SaintSwing {
 
     // Common to all Platforms
     val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
-    DoctusControllerDefault(framework, sched, canvas, pointable, draggable)
+    DoctusTemplateControllerImpl(framework, sched, canvas, pointable, draggable)
   }
 }
 
@@ -80,8 +82,8 @@ case class RecorderReloaderHttp(
       .map(resp => responseToChunkSource(resp))
       .map { srcChunk: Source[HttpEntity.ChunkStreamPart, _] =>
         val result = srcChunk
-          .map {chunkedStreamPart => chunkedStreamPart.data().decodeString("UTF-8")}
-          .filter{str => str.length() > 0}
+          .map { chunkedStreamPart => chunkedStreamPart.data().decodeString("UTF-8") }
+          .filter { str => str.length() > 0 }
           .map(string => upickle.default.read[Seq[Recordable]](string))
           .runForeach(recList => recList.foreach { rec =>
             consumer.consume(rec)
