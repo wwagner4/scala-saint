@@ -17,7 +17,7 @@ trait DoctusTemplate {
 
   def frameRate: Option[Int] = Some(60)
 
-  def onDraw(g: DoctusGraphics): Unit
+  def draw(g: DoctusGraphics): Unit
 
   def pointablePressed(pos: DoctusPoint): Unit
 
@@ -45,7 +45,7 @@ trait DoctusController[T <: DoctusTemplate] {
     sched.start(canvas.repaint, fr)
   }
 
-  canvas.onRepaint(template.onDraw)
+  canvas.onRepaint(template.draw)
   // TODO There could be a graphic context on all these on... methods. ???
   pointable.onStart(template.pointablePressed)
 

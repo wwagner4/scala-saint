@@ -20,6 +20,9 @@ import doctus.swing.DoctusSchedulerSwing
 import javax.swing.JFrame
 import javax.swing.JPanel
 import com.typesafe.config.Config
+import doctus.swing.DoctusPointableSwing
+import doctus.swing.DoctusPointableSwing
+import doctus.core.DoctusPointable
 
 case class ServerConfig(hostName: String, port: Int)
 
@@ -60,6 +63,7 @@ trait SaintSwing {
     val canvas = DoctusCanvasSwing(panel)
     val sched = DoctusSchedulerSwing
     val draggable = DoctusDraggableSwing(panel)
+    val pointable = DoctusPointableSwing(panel)
 
     val cp = new JPanel
     cp.setLayout(new BorderLayout)
@@ -74,10 +78,10 @@ trait SaintSwing {
     top.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
     top.setVisible(true)
 
-    runController(editMode, canvas, sched, draggable, system, materializer)
+    runController(editMode, canvas, sched, pointable, draggable, system, materializer)
   }
 
-  def runController(editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
+  def runController(editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, pointable: DoctusPointable, draggable: DoctusDraggable,
                     system: ActorSystem, mat: Materializer): Unit
 
 }

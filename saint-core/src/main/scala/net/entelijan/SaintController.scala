@@ -1,7 +1,6 @@
 package net.entelijan
 
 import doctus.core.color.DoctusColorWhite
-import doctus.core.framework.DoctusDraggableFramework
 import doctus.core.util.DoctusPoint
 import doctus.core.{ DoctusCanvas, DoctusColor, DoctusGraphics }
 import doctus.math.Affine
@@ -10,6 +9,7 @@ import doctus.core.color.DoctusColorRgb
 import doctus.core.color.DoctusColorBlack
 import scala.util.Success
 import scala.util.Failure
+import doctus.core.template.DoctusTemplate
 
 trait RecorderReloaderBuffering {
   def recordTransport(t: SaintTransport)
@@ -83,7 +83,7 @@ trait SAffine {
 
 }
 
-case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloader) extends DoctusDraggableFramework with RecordableConsumer {
+case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanvas, recRel: RecorderReloader) extends DoctusTemplate with RecordableConsumer {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -186,7 +186,7 @@ case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanva
 
   val components: List[Component] = List(colorComp, strokeWidthComp, brightnessComp, colorBWComp, reloadComp, modeComp)
 
-  def draggableDrag(pos: DoctusPoint): Unit = {
+  def pointableDragged(pos: DoctusPoint): Unit = {
     components.foreach {
       _.draggableDrag(pos)
     }
@@ -207,14 +207,14 @@ case class DoctusDraggableFrameworkSaint(editmode: Editmode, canvas: DoctusCanva
     }
   }
 
-  def draggableStart(pos: DoctusPoint): Unit = {
+  def pointablePressed(pos: DoctusPoint): Unit = {
     components.foreach {
       _.draggableStart(pos)
     }
     startPoint = Some(pos)
   }
 
-  def draggableStop(pos: DoctusPoint): Unit = {
+  def pointableReleased(pos: DoctusPoint): Unit = {
     if (reactingToUserInput) {
       val from = startPoint.get
       val to = pos

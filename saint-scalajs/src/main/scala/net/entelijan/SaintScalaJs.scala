@@ -1,14 +1,14 @@
 package net.entelijan
 
 import doctus.core.DoctusScheduler
-import doctus.core.framework.DefaultDraggableController
 import doctus.scalajs.{ DoctusCanvasScalajs, DoctusDraggableScalajs, DoctusSchedulerScalajs }
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw._
-
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.JSExport
+import doctus.core.template.DoctusControllerDefault
+import doctus.scalajs.DoctusPointableScalajs
 
 @JSExport("SaintScalaJs")
 object SaintScalaJs {
@@ -23,12 +23,13 @@ object SaintScalaJs {
     val canvas = DoctusCanvasScalajs(canvasElem)
     val sched = DoctusSchedulerScalajs
     val draggable = DoctusDraggableScalajs(canvasElem)
+    val pointable = DoctusPointableScalajs(canvasElem)
 
     val mode = upickle.default.read[Editmode](editmode)
 
     // Common to all platforms
     val fw = DoctusDraggableFrameworkSaint(mode, canvas, RecorderReloaderScalaJs(sched))
-    DefaultDraggableController(fw, canvas, sched, draggable)
+    DoctusControllerDefault(fw, sched, canvas, pointable, draggable)
 
   }
 

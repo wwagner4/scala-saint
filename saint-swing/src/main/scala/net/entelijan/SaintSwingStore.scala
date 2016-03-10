@@ -7,11 +7,12 @@ import akka.stream.scaladsl.Source
 import doctus.core.DoctusCanvas
 import doctus.core.DoctusDraggable
 import doctus.core.DoctusScheduler
-import doctus.core.framework.DefaultDraggableController
 import java.io.File
 import akka.stream.scaladsl.Sink
 import scala.util.Success
 import scala.util.Failure
+import doctus.core.DoctusPointable
+import doctus.core.template.DoctusControllerDefault
 
 object SaintSwingStore extends App with SaintSwing {
 
@@ -25,7 +26,7 @@ object SaintSwingStore extends App with SaintSwing {
   run
 
   def runController(
-    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
+    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, pointable: DoctusPointable, draggable: DoctusDraggable,
     sys: ActorSystem, mat: Materializer): Unit = {
 
     val store = new ImageStoreFilesys(workdir)
@@ -33,7 +34,7 @@ object SaintSwingStore extends App with SaintSwing {
 
     // Common to all Platforms
     val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
-    DefaultDraggableController(framework, canvas, sched, draggable)
+    DoctusControllerDefault(framework, sched, canvas, pointable, draggable)
   }
 }
 

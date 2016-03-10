@@ -19,9 +19,10 @@ import akka.stream.scaladsl.Source
 import doctus.core.DoctusCanvas
 import doctus.core.DoctusDraggable
 import doctus.core.DoctusScheduler
-import doctus.core.framework.DefaultDraggableController
 import scala.util.Success
 import scala.util.Failure
+import doctus.core.DoctusPointable
+import doctus.core.template.DoctusControllerDefault
 
 object SaintSwingHttp extends App with SaintSwing {
 
@@ -39,7 +40,7 @@ object SaintSwingHttp extends App with SaintSwing {
   run
 
   def runController(
-    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, draggable: DoctusDraggable,
+    editMode: Editmode, canvas: DoctusCanvas, sched: DoctusScheduler, pointable: DoctusPointable, draggable: DoctusDraggable,
     system: ActorSystem, mat: Materializer): Unit = {
 
     val clientFlow: Flow[HttpRequest, HttpResponse, _] =
@@ -50,7 +51,7 @@ object SaintSwingHttp extends App with SaintSwing {
 
     // Common to all Platforms
     val framework = DoctusDraggableFrameworkSaint(editMode, canvas, recRel)
-    DefaultDraggableController(framework, canvas, sched, draggable)
+    DoctusControllerDefault(framework, sched, canvas, pointable, draggable)
   }
 }
 

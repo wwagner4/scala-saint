@@ -1,7 +1,6 @@
 package net.entelijan
 
 import doctus.core.color.{ DoctusColorBlack, DoctusColorRgb, DoctusColorUtil, DoctusColorWhite }
-import doctus.core.framework.Rect
 import doctus.core.util.{ DoctusPoint, DoctusVector }
 import doctus.core.{ DoctusColor, DoctusGraphics }
 
@@ -16,7 +15,37 @@ case object Layout {
   val colorSelected = DoctusColorRgb(200, 200, 200)
 }
 
-trait Component extends Rect {
+trait Region {
+
+  def origin: DoctusPoint
+
+  def width: Double
+
+  def height: Double
+
+  def isEnclosing(p: DoctusPoint): Boolean = {
+    def between(x: Double, a: Double, b: Double): Boolean = {
+      if (a <= b) x >= a && x <= b
+      else x <= a && x >= b
+
+    }
+    between(p.x, origin.x, origin.x + width) &&
+      between(p.y, origin.y, origin.y + height)
+  }
+
+}
+
+object Region {
+
+  case class RegionImpl(origin: DoctusPoint, width: Double, height: Double) extends Region
+
+  def apply(origin: DoctusPoint, width: Double, height: Double) = RegionImpl(origin, width, height)
+
+}
+
+
+
+trait Component extends Region {
 
   def draw(g: DoctusGraphics): Unit
 
@@ -104,7 +133,7 @@ trait RadioButton[T] extends Component {
   trait SubButton[U] {
     def draw(g: DoctusGraphics, index: Int): Unit
 
-    def rect: Rect
+    def rect: Region
 
     def value: U
   }
@@ -165,18 +194,18 @@ trait RadioButton[T] extends Component {
     preselectedIndex.isDefined && preselectedIndex.get == index
   }
 
-  protected def buttonsRect(i: Int, size: Int): Rect = {
+  protected def buttonsRect(i: Int, size: Int): Region = {
     def buttonRectanglesHorizontal = {
       val w1 = width / size
       val w = math.ceil(w1)
       val h = height
-      Rect(DoctusPoint(i * w1 + origin.x, origin.y), w, h)
+      Region(DoctusPoint(i * w1 + origin.x, origin.y), w, h)
     }
     def buttonRectanglesVertical = {
       val w = width
       val h1 = height / size
       val h = math.ceil(h1)
-      Rect(DoctusPoint(origin.x, i * h1 + origin.y), w, h)
+      Region(DoctusPoint(origin.x, i * h1 + origin.y), w, h)
     }
 
     if (width > height) buttonRectanglesHorizontal
@@ -209,7 +238,7 @@ case class RadioButtonColorCol(origin: DoctusPoint, width: Double, height: Doubl
     g.text(txt, txtOrigin, 0)
   }
 
-  case class ColorButton(color: DoctusColor, rect: Rect) extends SubButton[DoctusColor] {
+  case class ColorButton(color: DoctusColor, rect: Region) extends SubButton[DoctusColor] {
 
     private val gray = DoctusColorRgb(150, 150, 150)
 
@@ -263,7 +292,7 @@ case class RadioButtonColorBW(origin: DoctusPoint, width: Double, height: Double
     }
   }
 
-  case class ColorButton(color: DoctusColor, rect: Rect) extends SubButton[DoctusColor] {
+  case class ColorButton(color: DoctusColor, rect: Region) extends SubButton[DoctusColor] {
 
     def value = color
 
@@ -335,7 +364,7 @@ case class RadioButtonGeneric[T](origin: DoctusPoint, width: Double, height: Dou
     }
   }
 
-  case class GenericButton(value: T, rect: Rect) extends SubButton[T] {
+  case class GenericButton(value: T, rect: Region) extends SubButton[T] {
 
     private def creaGray(value: Int): DoctusColor = {
       DoctusColorRgb(value, value, value)
