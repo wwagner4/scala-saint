@@ -1,7 +1,6 @@
 package net.entelijan
 
 import utest._
-import utest.framework.TestSuite
 
 object ImageFitSuite extends TestSuite {
 

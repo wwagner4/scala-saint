@@ -14,7 +14,7 @@ import doctus.scalajs.DoctusTemplateCanvasScalajs
 @JSExport("SaintScalaJs")
 object SaintScalaJs {
 
-  import scalajs.concurrent.JSExecutionContext.Implicits.runNow
+  import scalajs.concurrent.JSExecutionContext.Implicits.queue
 
   @JSExport
   def main(editmode: String) {

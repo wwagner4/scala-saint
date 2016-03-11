@@ -15,9 +15,9 @@ object SaintBuild extends Build {
 
     val version = "0.1.0-SNAPSHOT"
 
-    val scalaVersion = "2.11.7"
+    val scalaVersion = "2.11.8"
     val doctusVersion = "1.0.5-SNAPSHOT"
-    val akkaStreamVersion = "2.0.1"
+    val akkaStreamVersion = "2.0.3"
 
   }
 
@@ -42,14 +42,14 @@ object SaintBuild extends Build {
         Seq(
           jsDependencies += RuntimeDOM,
           libraryDependencies += "net.entelijan" %%% "doctus-core" % D.doctusVersion,
-          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.3.0" % "test")
+          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.4.1" % "test")
 
     lazy val serverSettings =
       commonSettings ++
         Seq(
           mainClass := Some("net.entelijan.SaintServer"),
           assemblyJarName := "saint.jar",
-          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
+          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.4.1" % "test",
           libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test",
           testFrameworks += new TestFramework("utest.runner.Framework")
         )
@@ -58,25 +58,26 @@ object SaintBuild extends Build {
       commonSettings ++
         Seq(
           fork := true,
-          libraryDependencies += "com.lihaoyi" %% "upickle" % "0.3.4",
+          libraryDependencies += "com.lihaoyi" %% "upickle" % "0.3.7",
           libraryDependencies += "com.typesafe.akka" %% "akka-stream-experimental" % D.akkaStreamVersion,
           libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % D.akkaStreamVersion,
           libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % D.akkaStreamVersion,
           libraryDependencies += "net.entelijan" %% "doctus-swing" % D.doctusVersion,
-          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
+          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.4.1" % "test",
           libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test",
           libraryDependencies += "com.typesafe" % "config" % "1.2.1",
+          libraryDependencies += "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.4",
           testFrameworks += new TestFramework("utest.runner.Framework"))
 
     lazy val scalajsSettings =
       commonSettings ++
         Seq(
           jsDependencies += RuntimeDOM,
-          libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.3.4",
-          libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.0",
-          libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
-          libraryDependencies += "org.scala-js" %% "scalajs-library" % "0.6.5",
-          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
+          libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.3.7",
+          libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
+          libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.0",
+          libraryDependencies += "org.scala-js" %% "scalajs-library" % "0.6.7",
+          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.4.1" % "test",
           libraryDependencies += "net.entelijan" %%% "doctus-scalajs" % D.doctusVersion)
 
   }
