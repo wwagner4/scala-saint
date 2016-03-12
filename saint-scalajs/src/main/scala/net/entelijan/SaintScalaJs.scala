@@ -7,7 +7,7 @@ import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw._
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.JSExport
-import doctus.core.template.DoctusTemplateControllerImpl
+import doctus.core.template.DoctusTemplateController
 import doctus.scalajs.DoctusPointableScalajs
 import doctus.scalajs.DoctusTemplateCanvasScalajs
 
@@ -28,7 +28,7 @@ object SaintScalaJs {
 
     // Common to all platforms
     val fw = DoctusTemplateSaint(mode, canvas, RecorderReloaderScalaJs(sched))
-    DoctusTemplateControllerImpl(fw, sched, canvas)
+    DoctusTemplateController(fw, sched, canvas)
 
   }
 

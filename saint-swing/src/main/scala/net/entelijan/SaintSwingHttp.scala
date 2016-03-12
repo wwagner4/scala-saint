@@ -23,7 +23,7 @@ import doctus.core.DoctusCanvas
 import doctus.core.DoctusDraggable
 import doctus.core.DoctusPointable
 import doctus.core.DoctusScheduler
-import doctus.core.template.DoctusTemplateControllerImpl
+import doctus.core.template.DoctusTemplateController
 import doctus.core.template.DoctusTemplateCanvas
 
 object SaintSwingHttp extends App with SaintSwing {
@@ -52,7 +52,7 @@ object SaintSwingHttp extends App with SaintSwing {
 
     // Common to all Platforms
     val framework = DoctusTemplateSaint(editMode, canvas, recRel)
-    DoctusTemplateControllerImpl(framework, sched, canvas)
+    DoctusTemplateController(framework, sched, canvas)
   }
 }
 
