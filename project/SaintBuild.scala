@@ -23,13 +23,13 @@ object SaintBuild extends Build {
 
   // Settings
   object S {
-
+    
     lazy val commonSettings =
       Seq(
         version := D.version,
         scalaVersion := D.scalaVersion,
         organization := "net.entelijan",
-        resolvers += "entelijan" at "http://entelijan.net/artifactory/repo",
+        resolvers += Resolver.url("entelijan-resolve", url("http://entelijan.net/ivy2/"))(Resolver.ivyStylePatterns),
         EclipseKeys.withSource := true,
         assemblyMergeStrategy in assembly <<= (assemblyMergeStrategy in assembly) { (old) => {
           case PathList("JS_DEPENDENCIES") => MergeStrategy.discard
