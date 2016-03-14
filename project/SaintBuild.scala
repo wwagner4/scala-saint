@@ -29,7 +29,7 @@ object SaintBuild extends Build {
         version := D.version,
         scalaVersion := D.scalaVersion,
         organization := "net.entelijan",
-        resolvers += Resolver.url("entelijan-resolve", url("http://entelijan.net/ivy2/"))(Resolver.ivyStylePatterns),
+        resolvers += Resolver.url("entelijan-resolver", url("http://entelijan.net/ivy2/"))(Resolver.ivyStylePatterns),
         EclipseKeys.withSource := true,
         assemblyMergeStrategy in assembly <<= (assemblyMergeStrategy in assembly) { (old) => {
           case PathList("JS_DEPENDENCIES") => MergeStrategy.discard
