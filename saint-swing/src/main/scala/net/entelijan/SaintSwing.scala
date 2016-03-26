@@ -60,7 +60,7 @@ trait SaintSwing {
 
     }
     top.addWindowListener(wl)
-    val panel = DoctusComponentFactory.component
+    val panel = DoctusComponentFactory.component(textAntialiasing = false, doubleBuffering = false)
 
     val canvas = DoctusTemplateCanvasSwing(panel)
     val sched = DoctusSchedulerSwing
