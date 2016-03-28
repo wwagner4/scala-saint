@@ -10,6 +10,7 @@ import doctus.core.color.DoctusColorBlack
 import scala.util.Success
 import scala.util.Failure
 import doctus.core.template.DoctusTemplate
+import doctus.core.DoctusKeyCode
 
 trait RecorderReloaderBuffering {
   def recordTransport(t: SaintTransport)
@@ -251,6 +252,8 @@ case class DoctusTemplateSaint(editmode: Editmode, canvas: DoctusCanvas, recRel:
     }
     components.foreach { _.draw(g) }
   }
+
+  def keyPressed(code: DoctusKeyCode): Unit = () // Nothing to do
 
   private def translate(from: DoctusPoint, to: DoctusPoint) = {
     val off = from - to
