@@ -1,5 +1,6 @@
 val doctusVersion = "1.0.6-SNAPSHOT"
-val akkaStreamVersion = "2.0.3"
+val akkaStreamVersion = "2.5.14"
+val akkaVersion = "10.1.3"
 
 
 lazy val commonSettings = Seq(
@@ -16,8 +17,8 @@ lazy val server = (project in file("saint-server"))
       commonSettings,
       mainClass := Some("net.entelijan.SaintServer"),
       assemblyJarName := "saint.jar",
-      libraryDependencies += "com.lihaoyi" %%% "utest" % "0.4.1" % "test",
-      libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test",
+      libraryDependencies += "com.lihaoyi" %%% "utest" % "0.6.3" % "test",
+      libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test",
       testFrameworks += new TestFramework("utest.runner.Framework"),
       )  
   .dependsOn(swing)
@@ -26,22 +27,23 @@ lazy val core = (project in file("saint-core"))
    .settings(
       commonSettings,
       libraryDependencies += "net.entelijan" %%% "doctus-core" % doctusVersion,
-      libraryDependencies += "com.lihaoyi" %%% "utest" % "0.4.1" % "test",
+      libraryDependencies += "com.lihaoyi" %%% "utest" % "0.6.3" % "test",
       )
+      .enablePlugins(ScalaJSPlugin)
 
 lazy val swing = (project in file("saint-swing")) 
    .settings(
       commonSettings,
           fork := true,
-          libraryDependencies += "com.lihaoyi" %% "upickle" % "0.3.7",
-          libraryDependencies += "com.typesafe.akka" %% "akka-stream-experimental" % akkaStreamVersion,
-          libraryDependencies += "com.typesafe.akka" %% "akka-http-core-experimental" % akkaStreamVersion,
-          libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % akkaStreamVersion,
-          libraryDependencies += "net.entelijan" %% "doctus-swing" % doctusVersion,
-          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.4.1" % "test",
-          libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test",
+          libraryDependencies += "com.lihaoyi" %% "upickle" % "0.6.5",
+          libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaStreamVersion,
+          libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % akkaVersion,
+          libraryDependencies += "com.typesafe.akka" %% "akka-http" % akkaVersion,
+          libraryDependencies += "net.entelijan" %% "doctus-jvm" % doctusVersion,
+          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.6.3" % "test",
+          libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test",
           libraryDependencies += "com.typesafe" % "config" % "1.2.1",
-          libraryDependencies += "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.4",
+          libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
           testFrameworks += new TestFramework("utest.runner.Framework"),
       )
       .dependsOn(core)
@@ -49,11 +51,11 @@ lazy val swing = (project in file("saint-swing"))
 lazy val scalajs = (project in file("saint-scalajs")) 
    .settings(
       commonSettings,
-          libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.3.7",
-          libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
-          libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.0",
-          libraryDependencies += "org.scala-js" %% "scalajs-library" % "0.6.7",
-          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.4.1" % "test",
+          libraryDependencies += "com.lihaoyi" %%% "upickle" % "0.6.5",
+          libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.6",
+          libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.4",
+          libraryDependencies += "org.scala-js" %% "scalajs-library" % "0.6.23",
+          libraryDependencies += "com.lihaoyi" %%% "utest" % "0.6.3" % "test",
           libraryDependencies += "net.entelijan" %%% "doctus-scalajs" % doctusVersion
       )
       .dependsOn(core)
