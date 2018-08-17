@@ -10,3 +10,4 @@ build.properties
 *.js
 application.properties
 .DS_Store
+.idea

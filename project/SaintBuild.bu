@@ -1,12 +1,4 @@
-import sbt._
-import Keys._
-import sbt.Package.ManifestAttributes
-import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
-import org.scalajs.sbtplugin.ScalaJSPlugin
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
-import sbtassembly._
-import sbtassembly.AssemblyKeys._
 
 object SaintBuild extends Build {
 
@@ -15,7 +7,7 @@ object SaintBuild extends Build {
 
     val version = "0.1.0-SNAPSHOT"
 
-    val scalaVersion = "2.11.8"
+    val scalaVersion = "2.12.4"
     val doctusVersion = "1.0.5-SNAPSHOT"
     val akkaStreamVersion = "2.0.3"
 
