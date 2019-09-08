@@ -8,3 +8,5 @@ To get doctus follow these steps
 * sbt publish-local
 
 That should create the necessary jars in your local repository 
+
+# docker
