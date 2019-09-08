@@ -16,4 +16,7 @@ docker build -t saint .
 
 docker run -it --rm -p 8885:8099 saint
 docker run -p 8885:8099 saint &
+
+http://37.252.189.71:8885/
+http://localhost:8885/
 ```
